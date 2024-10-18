@@ -12,84 +12,73 @@ const connection = mysql.createConnection({
 });
 
 // Step 2: Create the 'meetup' database if it doesn't exist
+const createDatabase = (dbName) => `
+  CREATE DATABASE IF NOT EXISTS ${dbName}
+`;
+
 connection.query(
-  "CREATE DATABASE IF NOT EXISTS ??",
-  [process.env.DB_NAME],
+  createDatabase(process.env.DB_NAME),
   function (error, results) {
     if (error) throw error;
-    console.log("Database 'meetup' created or already exists:", results);
+    console.log("Database created or already exists:", results);
+
+    // Step 3: Use the 'meetup' database after it has been created
+    connection.query(`USE ${process.env.DB_NAME}`, function (error) {
+      if (error) throw error;
+      console.log("Using database:", process.env.DB_NAME);
+
+      // Proceed with creating tables
+      createTables();
+    });
   }
 );
 
-// Step 3: Switch to the 'meetup' database
-connection.query("USE ??", [process.env.DB_NAME], function (error, results) {
-  if (error) throw error;
-  console.log("Using 'meetup' database:", results);
-});
+// Function to create tables
+const createTables = () => {
+  // Step 5: Create the 'Room' table
+  const createRoomQuery = `
+    CREATE TABLE IF NOT EXISTS Room (
+      room_no INT PRIMARY KEY AUTO_INCREMENT, 
+      room_name VARCHAR(50) NOT NULL, 
+      floor_number INT NOT NULL
+    )
+  `;
+  runQuery(createRoomQuery, "'Room' table created");
 
-// Step 4: Connect to the database
-connection.connect();
+  // Step 6: Create the 'Meeting' table
+  const createMeetingQuery = `
+    CREATE TABLE IF NOT EXISTS Meeting (
+      meeting_no INT PRIMARY KEY AUTO_INCREMENT, 
+      meeting_title VARCHAR(50) NOT NULL, 
+      starting_time TIME, 
+      ending_time TIME, 
+      room_no INT,
+      FOREIGN KEY (room_no) REFERENCES Room(room_no)
+    )
+  `;
+  runQuery(createMeetingQuery, "'Meeting' table created");
 
-// Step 5: Create the 'Room' table if it doesn't exist
-const createRoomQuery = `
-  CREATE TABLE IF NOT EXISTS Room (
-    room_no INT PRIMARY KEY AUTO_INCREMENT, 
-    room_name VARCHAR(50) NOT NULL, 
-    floor_number INT NOT NULL
-  )`;
+  // Step 7: Create the 'Invitee' table
+  const createInviteeQuery = `
+    CREATE TABLE IF NOT EXISTS Invitee (
+      invitee_id INT PRIMARY KEY AUTO_INCREMENT, 
+      invitee_name VARCHAR(50) NOT NULL, 
+      meeting_no INT,
+      FOREIGN KEY (meeting_no) REFERENCES Meeting(meeting_no)
+    )
+  `;
+  runQuery(createInviteeQuery, "'Invitee' table created");
+};
 
-connection.query(createRoomQuery, function (error, results) {
-  if (error) throw error;
-  console.log("'Room' table created:", results);
-});
+// Helper function to run queries
+const runQuery = (query, message) => {
+  connection.query(query, function (error, results) {
+    if (error) throw error;
+    console.log(message, results);
+  });
+};
 
-// Step 6: Create the 'Invitee' table if it doesn't exist
-const createInviteeQuery = `
-  CREATE TABLE IF NOT EXISTS Invitee (
-    meeting_no INT PRIMARY KEY AUTO_INCREMENT, 
-    meeting_title VARCHAR(50) NOT NULL, 
-    starting_time TIME, 
-    ending_time TIME, 
-    room_no INT,
-    FOREIGN KEY (room_no) REFERENCES Room(room_no)
-  )`;
-
-connection.query(createInviteeQuery, function (error, results) {
-  if (error) throw error;
-  console.log("'Invitee' table created:", results);
-});
-
-// Step 7: Insert rows into the 'Room' table
-const insertRoomsQuery = `
-  INSERT INTO Room (room_name, floor_number) 
-  VALUES 
-    ('room1', 1), 
-    ('room2', 2), 
-    ('room3', 3), 
-    ('room4', 4), 
-    ('room5', 5)`;
-
-connection.query(insertRoomsQuery, function (error, results) {
-  if (error) throw error;
-  console.log("Rows inserted into 'Room' table:", results);
-});
-
-// Step 8: Insert rows into the 'Invitee' table
-const insertInviteesQuery = `
-  INSERT INTO Invitee (meeting_title, starting_time, ending_time, room_no) 
-  VALUES 
-    ('meeting1', '10:00:00', '11:00:00', 1), 
-    ('meeting2', '11:00:00', '12:00:00', 2), 
-    ('meeting3', '12:00:00', '13:00:00', 3), 
-    ('meeting4', '13:00:00', '14:00:00', 4), 
-    ('meeting5', '14:00:00', '15:00:00', 5)`;
-
-connection.query(insertInviteesQuery, function (error, results) {
-  if (error) throw error;
-  console.log("Rows inserted into 'Invitee' table:", results);
-});
-
-// Optional: Close the database connection when done
+// Final step: Close the database connection when done
 connection.end(function (error) {
   if (error) throw error;
   console.log("Database connection closed.");

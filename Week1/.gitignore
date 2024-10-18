@@ -1,6 +1,5 @@
-package.json
-package-lock.json
+
 create-table.js
-node_modules/
-.env
-password.md
+# node_modules/
+# .env
+
