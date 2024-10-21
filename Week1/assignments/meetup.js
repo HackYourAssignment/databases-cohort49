@@ -21,7 +21,7 @@ DROP TABLE IF EXISTS Invitee;
  CREATE TABLE Invitee (
     invitee_no INT PRIMARY KEY,
     invitee_name VARCHAR(255) NOT NULL,
-    invited_by VARCHAR(255) NOT NULL
+    invited_by VARCHAR(255)
     );
   CREATE TABLE Room (
     room_no INT PRIMARY KEY,
