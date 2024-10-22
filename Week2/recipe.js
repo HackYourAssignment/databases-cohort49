@@ -10,10 +10,10 @@ const mysql = require('mysql');
  * @property {string} database - The name of the database to use for this connection.
  */
 const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'hyfuser',
-    password: '8080',
-    database: 'myRecipes'
+  host: "localhost",
+  user: "hyfuser",
+  password: "hyfpassword",
+  database: "myRecipes",
 });
 
 connection.connect((err) => {
