@@ -14,6 +14,20 @@ const connection = mysql.createConnection({
 // we don't have to call "then" over that promise
 const execQuery = util.promisify(connection.query.bind(connection));
 
+/**
+ * Asynchronously seeds the database by creating the necessary tables and inserting initial data.
+ *
+ * This function performs the following steps:
+ * 1. Connects to the database.
+ * 2. Creates the `students` and `teachers` tables if they do not already exist.
+ * 3. Inserts initial student data into the `students` table.
+ * 4. Handles any errors that occur during the process.
+ * 5. Closes the database connection.
+ *
+ * @async
+ * @function seedDatabase
+ * @returns {Promise<void>} A promise that resolves when the database has been seeded.
+ */
 async function seedDatabase() {
   const CREATE_STUDENTS_TABLE = `
     CREATE TABLE IF NOT EXISTS students (
