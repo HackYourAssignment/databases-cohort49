@@ -1,5 +1,14 @@
 import connection from './dbconnection.js';
 
+const runQuery = (query, description) => {
+  connection.query(query, (err, result) => {
+    if (err) {
+      console.log(`Error executing ${description}:`, err);
+      return;
+    }
+    console.log(`${description} executed successfully`, result);
+  });
+};
 // connection to the database
 connection.connect((err) => {
   if (err) {
@@ -15,37 +24,20 @@ CREATE TABLE IF NOT EXISTS authors(
    university TEXT NOT NULL, 
    date_of_birth DATE NOT NULL, 
    h_index INT NOT NULL, 
-   gender ENUM('m','f'))`;
+   gender ENUM('m','f')
+   );`;
+  runQuery(createTableQuery, 'creating the table');
 
   const addMentorColumnQuery = `
 ALTER TABLE authors
 ADD COLUMN mentor INT;`;
+  runQuery(addMentorColumnQuery, 'adding mentor column');
 
   const addForeignKeyQuery = `
 ALTER TABLE authors
 ADD CONSTRAINT fk_mentor FOREIGN KEY (mentor) REFERENCES authors(authors_id) ON DELETE SET NULL;`;
 
-  connection.query(createTableQuery, (err, result) => {
-    if (err) {
-      console.log('Error creating the table:', err);
-      return;
-    }
-    console.log('Table created successfully', result);
+  runQuery(addForeignKeyQuery, 'adding foreign key');
 
-    connection.query(addMentorColumnQuery, (err, result) => {
-      if (err) {
-        console.log('Error adding mentor column:', err);
-        return;
-      }
-      console.log('mentor column added successfully', result);
-      connection.query(addForeignKeyQuery, (err, result) => {
-        if (err) {
-          console.log('Error adding foreign key:', err);
-          return;
-        }
-        console.log('foreign key added successfully', result);
-        connection.end();
-      });
-    });
-  });
+  connection.end();
 });
