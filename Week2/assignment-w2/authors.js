@@ -35,7 +35,8 @@ ADD COLUMN mentor INT;`;
 
   const addForeignKeyQuery = `
 ALTER TABLE authors
-ADD CONSTRAINT fk_mentor FOREIGN KEY (mentor) REFERENCES authors(authors_id) ON DELETE SET NULL;`;
+ADD CONSTRAINT fk_mentor 
+FOREIGN KEY (mentor) REFERENCES authors(authors_id) ON DELETE SET NULL;`;
 
   runQuery(addForeignKeyQuery, 'adding foreign key');
 
