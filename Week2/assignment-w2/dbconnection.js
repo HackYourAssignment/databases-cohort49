@@ -5,11 +5,4 @@ const connection = mysql.createConnection({
   password: 'hyfpassword',
   database: 'userdb',
 });
-connection.connect((err) => {
-  if (err) {
-    console.error('Error connecting: ', err);
-    return;
-  }
-  console.log('connected to the database');
-});
 export default connection;
