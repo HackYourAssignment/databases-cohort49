@@ -2,5 +2,6 @@ export const connectionData = {
   host: 'localhost',
   user: 'hyfuser',
   password: 'hyfpassword',
-  // database: 'world',
+  // database: 'new_world',
+  // database: 'meetup_db',
 };

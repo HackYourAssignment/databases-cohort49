@@ -40,12 +40,12 @@ connection.connect((error) => {
   );
   // 5 list all countries in the descending order of their surface areas.
   query(
-    `SELECT name, surface_area FROM country ORDER BY surface_area DESC;`,
+    `SELECT name, SurfaceArea FROM country ORDER BY SurfaceArea DESC;`,
     'Countries in descending order of their surface areas',
   );
   // 6. what are the names of all cities in the Netherlands?
   query(
-    `SELECT name FROM city WHERE country_code = 'NLD';`,
+    `SELECT name FROM city WHERE CountryCode = 'NLD';`,
     'Cities in the Netherlands',
   );
   // 7. what is the population of Rotterdam?
@@ -55,7 +55,7 @@ connection.connect((error) => {
   );
   // 8. what are the top 10 countries by surface area?
   query(
-    `SELECT name, surface_area FROM country ORDER BY surface_area DESC LIMIT 10;`,
+    `SELECT name, SurfaceArea FROM country ORDER BY SurfaceArea DESC LIMIT 10;`,
     'Top 10 countries by surface area',
   );
   // 9. what are the top 10 most populated cities?

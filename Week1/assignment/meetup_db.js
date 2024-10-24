@@ -23,49 +23,50 @@ connection.connect((error) => {
 
   // create Invitee table
   query(
-    `CREATE TABLE Invitee (invitee_no INT PRIMARY KEY, invitee_name VARCHAR(255), invited_by INT);`,
+    `CREATE TABLE Invitee (invitee_no INT AUTO_INCREMENT PRIMARY KEY , invitee_name VARCHAR(255), invited_by INT);`,
     'Creating Invitee table',
   );
 
   // creating room table
   query(
-    `CREATE TABLE Room (room_no INT PRIMARY KEY, room_name VARCHAR(255), floor_no INT);`,
+    `CREATE TABLE Room (room_no INT AUTO_INCREMENT PRIMARY KEY, room_name VARCHAR(255) NOT NULL, floor_no INT);`,
     'Creating Room table',
   );
   // create meeting table
   query(
-    `CREATE TABLE Meeting (meeting_no INT PRIMARY KEY, meeting_title VARCHAR(255), start_time DATETIME, end_time DATETIME, room_no INT);`,
+    `CREATE TABLE Meeting (meeting_no INT AUTO_INCREMENT PRIMARY KEY, meeting_title VARCHAR(255), start_time DATETIME, end_time DATETIME, room_no INT,
+    FOREIGN KEY (room_no) REFERENCES Room(room_no) ON DELETE CASCADE);`,
     'Creating Meeting table',
   );
 
   // inserting data into Invitee table
   query(
-    `INSERT INTO Invitee 
-    VALUES (1,'John Doe', 5), 
-    (2,'Jane Doe', 1),
-    (3,'James Smith', 2),
-    (4,'Anne Smith', 3),
-    (5,'David Johnson', 4);`,
+    `INSERT INTO Invitee (invitee_name, invited_by)
+    VALUES ('John Doe', 5), 
+    ('Jane Doe', 1),
+    ('James Smith', 2),
+    ('Anne Smith', 3),
+    ('David Johnson', 4);`,
     'Inserting data into Invitee table',
   );
   // inserting data into Room table
   query(
-    `INSERT INTO Room  
-    VALUES (1,'brown', 1), 
-    (2,'yellow', 2),
-    (3,'green', 3),
-    (4,'Red', 4),
-    (5,'white', 5);`,
+    `INSERT INTO Room (room_name, floor_no) 
+    VALUES ('brown', 1), 
+    ('yellow', 2),
+    ('green', 3),
+    ('Red', 4),
+    ('white', 5);`,
     'Inserting data into Room table',
   );
   // inserting data into Meeting table
   query(
-    `INSERT INTO Meeting  
-    VALUES (1,'Meeting1', '2021-08-01 09:00:00', '2021-08-01 10:00:00', 1), 
-    (2,'Meeting2', '2021-08-01 10:00:00', '2021-08-01 11:00:00', 2),
-    (3,'Meeting3', '2021-08-01 11:00:00', '2021-08-01 12:00:00', 3),
-    (4,'Meeting4', '2021-08-01 12:00:00', '2021-08-01 13:00:00', 4),
-    (5,'Meeting5', '2021-08-01 13:00:00', '2021-08-01 14:00:00', 5);`,
+    `INSERT INTO Meeting (meeting_title, start_time, end_time, room_no) 
+    VALUES ('Meeting1', '2021-08-01 09:00:00', '2021-08-01 10:00:00', 1), 
+    ('Meeting2', '2021-08-01 10:00:00', '2021-08-01 11:00:00', 2),
+    ('Meeting3', '2021-08-01 11:00:00', '2021-08-01 12:00:00', 3),
+    ('Meeting4', '2021-08-01 12:00:00', '2021-08-01 13:00:00', 4),
+    ('Meeting5', '2021-08-01 13:00:00', '2021-08-01 14:00:00', 5);`,
     'Inserting data into Meeting table',
   );
 
