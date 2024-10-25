@@ -1,5 +1,5 @@
 
-create-table.js
-# node_modules/
-# .env
+# create-table.js
+node_modules/
+.env
 

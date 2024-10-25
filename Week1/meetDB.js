@@ -1,13 +1,15 @@
 const mysql = require("mysql2");
+const dotenv = require("dotenv");
 
 // Load environment variables from the .env file
+dotenv.config();
 
 // Step 1: Create a connection to the MySQL server using environment variables
 const connection = mysql.createConnection({
-  host: "localhost",
-  user: "hyfuser",
-  password: "hyfpassword",
-  dbName: "meetup",
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 });
 
 // Step 2: Create the 'meetup' database if it doesn't exist
@@ -76,5 +78,3 @@ const runQuery = (query, message) => {
     console.log(message, results);
   });
 };
-
-
