@@ -13,12 +13,12 @@ const main = async () => {
       {
         description: "All authors and their corresponding mentors",
         query:
-          "SELECT author.author_name, mentor.mentor_name FROM author JOIN mentor ON author.mentor = mentor.mentor_id",
+          "SELECT a.author_name as author, m.author_name as mentor FROM author a LEFT JOIN author m ON a.mentor = m.author_id",
       },
       {
         description: "All authors and the title of their published papers.",
         query:
-          "SELECT author.author_name, research_paper.paper_name FROM author LEFT JOIN research_paper ON author.author_id = research_paper.author_id",
+          "SELECT author.author_name,  research_paper.paper_name FROM author  LEFT JOIN research_paper_author as ra ON ra.author_id = author.author_id INNER JOIN research_paper ON ra.paper_id = research_paper.paper_id",
       },
     ];
 

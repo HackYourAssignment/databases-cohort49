@@ -14,28 +14,28 @@ const main = async () => {
       {
         description: "All research papers and the id of authors",
         query:
-          "SELECT research_paper.paper_name, author.author_id FROM research_paper JOIN author ON research_paper.author_id = author.author_id",
+          "SELECT rp.paper_name, a.author_id FROM research_paper rp LEFT JOIN research_paper_author rpa ON rp.paper_id = rpa.paper_id INNER JOIN author a ON rpa.author_id = a.author_id;",
       },
       {
         description:
           "Sum of the research papers published by all female authors",
-        query:
-          "SELECT COUNT(research_paper.paper_id), author.gender FROM research_paper JOIN author ON research_paper.author_id = author.author_id WHERE author.gender = 'f';",
+        query: `SELECT COUNT(rp.paper_id) as research_papers, a.gender FROM research_paper rp LEFT JOIN research_paper_author as rpa ON rp.paper_id = rpa.paper_id INNER JOIN  author a ON rpa.author_id = a.author_id WHERE a.gender = 'f';`,
       },
       {
         description: "Average of the h-index of all authors per university",
         query:
-          "SELECT AVG(author.h_index), research_paper.university FROM author LEFT JOIN research_paper ON author.author_id = research_paper.author_id GROUP BY research_paper.university;",
+          "SELECT AVG(h_index) as average_h_index, university FROM author GROUP BY university;",
       },
       {
         description: "Sum of the research papers of the authors per university",
         query:
-          "SELECT COUNT(research_paper.paper_id), research_paper.university FROM research_paper GROUP BY research_paper.university;",
+          "SELECT COUNT(rp.paper_id) as research_papers, a.university FROM research_paper rp LEFT JOIN research_paper_author  rpa ON rp.paper_id = rpa.paper_id INNER JOIN  author a ON rpa.author_id = a.author_id GROUP BY a.university;",
       },
       {
-        description: "All authors and the title of their published papers",
+        description:
+          "Minimum and maximum of the h-index of all authors per university",
         query:
-          " SELECT MAX(author.h_index), MIN(author.h_index), research_paper.university FROM author JOIN research_paper ON author.author_id = research_paper.author_id GROUP BY research_paper.university;",
+          "SELECT MAX(a.h_index) as max_h_index, MIN(a.h_index) as min_h_index, a.university FROM author as a GROUP BY a.university;",
       },
     ];
 

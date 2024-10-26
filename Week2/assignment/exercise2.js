@@ -27,72 +27,56 @@ const main = async () => {
   paper_id INT AUTO_INCREMENT PRIMARY KEY,
   paper_name VARCHAR(200) NOT NULL,
   conference_name VARCHAR(50) NOT NULL,
-  author_id INT,
-  publication_date DATE NOT NULL,
-  university VARCHAR(100) NOT NULL,
-  FOREIGN KEY (author_id) REFERENCES author(author_id)
+  publication_date DATE NOT NULL
  )`;
 
     const CreateTableResearchPaperAuthor = `
     CREATE TABLE IF NOT EXISTS research_paper_author (
   paper_id INT,
   author_id INT,
-  FOREIGN KEY (paper_id) REFERENCES research_paper(paper_id),
-  FOREIGN KEY (author_id) REFERENCES author(author_id)
- )`;
-
-    const createTableMentors = `
-    CREATE TABLE IF NOT EXISTS mentor (
-    mentor_id INT AUTO_INCREMENT PRIMARY KEY,
-    mentor_name VARCHAR(50) NOT NULL);`;
-
-    const createTableAuthorMentor = `
-    CREATE TABLE IF NOT EXISTS author_mentor (
-    author_id INT,
-    mentor_id INT,
-    FOREIGN KEY (author_id) REFERENCES author(author_id),
-    FOREIGN KEY (mentor_id) REFERENCES mentor(mentor_id));`;
+  FOREIGN KEY (paper_id) REFERENCES research_paper(paper_id) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (author_id) REFERENCES author(author_id) ON DELETE CASCADE ON UPDATE CASCADE,
+  primary key (paper_id, author_id));
+  `;
 
     await connection.query(CreateTableResearchPaper);
     await connection.query(CreateTableResearchPaperAuthor);
-    await connection.query(createTableMentors);
-    await connection.query(createTableAuthorMentor);
     console.log("Tables created");
 
     const insertDataToResearchPaper = `
- INSERT INTO research_paper (paper_name, conference_name, author_id, publication_date, university) VALUES 
- ('Are athletes good role models?', 'Sports', 1, '2021-01-01', 'Harvard University'),
- ('Do we need shorter working weeks?', 'Health', 5, '2019-11-04', 'University of Amsterdam'),
- ('Are universities becoming business-driven?', 'Socio-economic', 8, '2020-01-15', 'Maastricht University'),
- ('How does the government assess the health care needs of communities?', 'Health', 2, '2020-02-02', 'University of Amsterdam'),
- ('Cybersecurity: Can we really be safe?', 'Technology', 7, '2020-03-10', 'Stanford University'),
- ('The impact of climate change on agriculture', 'Environment', 3, '2020-04-21', 'University of California'),
- ('Artificial Intelligence: Opportunities and Threats', 'Technology', 9, '2021-05-05', 'MIT'),
- ('The role of social media in modern communication', 'Communication', 4, '2021-06-18', 'New York University'),
- ('Mental health awareness in schools', 'Health', 10, '2021-07-30', 'University of Toronto'),
- ('Urbanization and its effects on wildlife', 'Environmental Science', 6, '2021-08-25', 'University of Oxford'),
- ('Renewable energy: A sustainable future?', 'Energy', 11, '2021-09-10', 'University of Cambridge'),
- ('Gender equality in the workplace', 'Sociology', 5, '2021-10-12', 'University of Melbourne'),
- ('The rise of telemedicine', 'Health', 1, '2021-11-14', 'Harvard University'),
- ('Blockchain technology and its implications', 'Technology', 2, '2021-12-05', 'University of Sydney'),
- ('Cyberbullying: A growing concern', 'Education', 12, '2022-01-20', 'University of Michigan'),
- ('The importance of biodiversity', 'Environmental Science', 3, '2022-02-15', 'University of California'),
- ('Exploring the human genome', 'Genetics', 9, '2022-03-30', 'Johns Hopkins University'),
- ('The effects of social isolation on mental health', 'Health', 4, '2022-04-10', 'University of Chicago'),
- ('Artificial intelligence in healthcare', 'Health', 8, '2022-05-01', 'Stanford University'),
- ('The future of work: Remote vs. in-office', 'Business', 13, '2022-06-20', 'University of Pennsylvania'),
- ('Understanding climate policy', 'Environmental Science', 6, '2022-07-15', 'Yale University'),
- ('Education in the digital age', 'Education', 14, '2022-08-12', 'University of California'),
- ('Economic impact of the COVID-19 pandemic', 'Economics', 5, '2022-09-05', 'Harvard University'),
- ('The psychology of addiction', 'Psychology', 11, '2022-10-30', 'University of Toronto'),
- ('The role of technology in modern education', 'Education', 10, '2022-11-18', 'New York University'),
- ('Cultural impacts of globalization', 'Sociology', 15, '2022-12-01', 'University of Amsterdam'),
- ('Mental health and the workplace', 'Health', 7, '2023-01-15', 'University of Melbourne'),
- ('Sustainable urban development', 'Architecture', 2, '2023-02-20', 'MIT'),
- ('The influence of advertising on consumer behavior', 'Marketing', 9, '2023-03-18', 'University of Chicago'),
- ('Exploring renewable energy solutions', 'Energy', 12, '2023-04-10', 'University of California'),
- ('The effects of screen time on children', 'Health', 3, '2023-05-25', 'University of Toronto'),
- ('Emerging trends in cybersecurity', 'Technology', 8, '2023-06-30', 'Stanford University')
+ INSERT INTO research_paper (paper_name, conference_name, publication_date) VALUES 
+ ('Are athletes good role models?', 'Sports',  '2021-01-01'),
+ ('Do we need shorter working weeks?', 'Health',  '2019-11-04'),
+ ('Are universities becoming business-driven?', 'Socio-economic',  '2020-01-15'),
+ ('How does the government assess the health care needs of communities?', 'Health',  '2020-02-02'),
+ ('Cybersecurity: Can we really be safe?', 'Technology',  '2020-03-10'),
+ ('The impact of climate change on agriculture', 'Environment',  '2020-04-21'),
+ ('Artificial Intelligence: Opportunities and Threats', 'Technology',  '2021-05-05'),
+ ('The role of social media in modern communication', 'Communication',  '2021-06-18'),
+ ('Mental health awareness in schools', 'Health', '2021-07-30'),
+ ('Urbanization and its effects on wildlife', 'Environmental Science', '2021-08-25'),
+ ('Renewable energy: A sustainable future?', 'Energy', '2021-09-10'),
+ ('Gender equality in the workplace', 'Sociology', '2021-10-12'),
+ ('The rise of telemedicine', 'Health', '2021-11-14'),
+ ('Blockchain technology and its implications', 'Technology', '2021-12-05'),
+ ('Cyberbullying: A growing concern', 'Education', '2022-01-20'),
+ ('The importance of biodiversity', 'Environmental Science', '2022-02-15'),
+ ('Exploring the human genome', 'Genetics', '2022-03-30'),
+ ('The effects of social isolation on mental health', 'Health', '2022-04-10'),
+ ('Artificial intelligence in healthcare', 'Health', '2022-05-01'),
+ ('The future of work: Remote vs. in-office', 'Business', '2022-06-20'),
+ ('Understanding climate policy', 'Environmental Science', '2022-07-15'),
+ ('Education in the digital age', 'Education', '2022-08-12'),
+ ('Economic impact of the COVID-19 pandemic', 'Economics', '2022-09-05'),
+ ('The psychology of addiction', 'Psychology', '2022-10-30'),
+ ('The role of technology in modern education', 'Education', '2022-11-18'),
+ ('Cultural impacts of globalization', 'Sociology', '2022-12-01'),
+ ('Mental health and the workplace', 'Health', '2023-01-15'),
+ ('Sustainable urban development', 'Architecture', '2023-02-20'),
+ ('The influence of advertising on consumer behavior', 'Marketing', '2023-03-18'),
+ ('Exploring renewable energy solutions', 'Energy', '2023-04-10'),
+ ('The effects of screen time on children', 'Health', '2023-05-25'),
+ ('Emerging trends in cybersecurity', 'Technology', '2023-06-30')
 `;
 
     const insertDataToResearchPaperAuthor = `
@@ -131,41 +115,9 @@ const main = async () => {
     (32, 8)
 `;
 
-    const insertDataToMentor = `
-    INSERT INTO mentor (mentor_name) VALUES
-    ('Dr. Smith'),      
-    ('Dr. Johnson'),    
-    ('Dr. Williams'),   
-    ('Dr. Brown'),    
-    ('Dr. Garcia'),    
-    ('Dr. Martinez'),   
-    ('Dr. Anderson'),   
-    ('Dr. Taylor'),  
-    ('Dr. Thomas');
-`;
-
-    const insertDataToAuthorMentor = `INSERT INTO author_mentor (author_id, mentor_id) VALUES 
-    (1, 1),
-    (2, 2),
-    (3, 3),
-    (4, 4),
-    (5, 5),
-    (6, 6),
-    (7, 1),
-    (8, 7),
-    (9, 8),
-    (10, 9),
-    (11, 2),
-    (12, 3),
-    (13, 4),
-    (14, 5),
-    (15, 6);
-`;
-
     await connection.query(insertDataToResearchPaper);
     await connection.query(insertDataToResearchPaperAuthor);
-    await connection.query(insertDataToMentor);
-    await connection.query(insertDataToAuthorMentor);
+
     console.log("Data inserted");
   } catch (error) {
     console.log("error:", error.message);
