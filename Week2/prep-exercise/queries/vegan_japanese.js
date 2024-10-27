@@ -17,10 +17,9 @@ connection.connect((err) => {
 
 const getVeganJapaneseRecipes = () => {
   connection.query(
-    `
-    SELECT recipe_name FROM recipes 
-    WHERE is_vegan = true AND cuisine = 'Japanese'
-  `,
+    `SELECT recipe_name FROM recipes 
+     JOIN cuisines ON recipes.cuisine_id = cuisines.id 
+     WHERE is_vegan = true AND cuisines.name = 'Japanese'`,
     (err, results) => {
       if (err) {
         console.error("Error executing query:", err);

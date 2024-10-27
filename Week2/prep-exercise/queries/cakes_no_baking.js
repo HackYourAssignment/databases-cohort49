@@ -17,10 +17,9 @@ connection.connect((err) => {
 
 const getCakesNoBaking = () => {
   connection.query(
-    `
-    SELECT recipe_name FROM recipes 
-    WHERE category = 'cake' AND requires_baking = false
-  `,
+    `SELECT recipe_name FROM recipes 
+     JOIN categories ON recipes.category_id = categories.id 
+     WHERE categories.name = 'cake' AND requires_baking = false`,
     (err, results) => {
       if (err) {
         console.error("Error executing query:", err);
@@ -30,7 +29,6 @@ const getCakesNoBaking = () => {
     }
   );
 
-  // Close the connection after the query is complete
   connection.end();
 };
 
