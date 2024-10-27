@@ -5,6 +5,7 @@ const connection = mysql.createConnection({
   user: "hyfuser",
   password: "hyfpassword",
 });
+
 connection.connect();
 
 const authorsAndMentors = `
@@ -13,20 +14,25 @@ const authorsAndMentors = `
   LEFT JOIN authors a2 ON a1.mentor = a2.author_id;
 `;
 
-connection.query(authorsAndMentors, (error, results) => {
-  if (error) throw error;
-  console.log(results);
-});
-
 const authorsAndPapers = `
-  SELECT authors.*, research_papers.paper_title
+  SELECT authors.author_name, research_papers.paper_title
   FROM authors
-  LEFT JOIN research_papers ON authors.author_id = research_papers.author_id;
+  LEFT JOIN author_paper ON authors.author_id = author_paper.author_id
+  LEFT JOIN research_papers ON author_paper.paper_id = research_papers.paper_id;
 `;
 
-connection.query(authorsAndPapers, (error, results) => {
-  if (error) throw error;
-  console.log(results);
-});
+async function runQueries() {
+  try {
+    const mentorsResult = await connection.query(authorsAndMentors);
+    console.log("Authors and mentors:", mentorsResult);
 
-connection.end();
+    const papersResult = await connection.query(authorsAndPapers);
+    console.log("Authors and papers:", papersResult);
+  } catch (error) {
+    console.error(error);
+  } finally {
+    connection.end();
+  }
+}
+
+runQueries();

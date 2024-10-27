@@ -20,15 +20,20 @@ const createAuthorsTable = `
 `;
 
 const addMentorColumn = `
-  ALTER TABLE authors ADD COLUMN mentor INT, ADD FOREIGN KEY (mentor) REFERENCES authors(author_id);
+  ALTER TABLE authors ADD COLUMN mentor INT, 
+  ADD FOREIGN KEY (mentor) REFERENCES authors(author_id);
 `;
 
-connection.query(createAuthorsTable, (error, results) => {
-  if (error) throw error;
+async function setupDatabase() {
+  try {
+    await connection.query(createAuthorsTable);
+    await connection.query(addMentorColumn);
+    console.log("Authors table created and mentor column added.");
+  } catch (error) {
+    console.error(error);
+  } finally {
+    connection.end();
+  }
+}
 
-  connection.query(addMentorColumn, (error, results) => {
-    if (error) throw error;
-  });
-});
-
-connection.end();
+setupDatabase();
