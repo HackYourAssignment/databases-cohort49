@@ -3,11 +3,8 @@ import authors from './results_&_dummyData/authors.json' with { type: "json" };
 import papers from './results_&_dummyData/research_papers.json' with { type: "json" };
 
 export default async function main() {
-  const authorsRecordsIds = [];
-  const papersRecordsIds = [];
-
-  for (const author of authors) authorsRecordsIds.push(await addAuthor(author));
-  for (const paper of papers) papersRecordsIds.push(await addPaper(paper));
+  const authorsRecordsIds = await Promise.all(authors.map(addAuthor));
+  const papersRecordsIds = await Promise.all(papers.map(addPaper));
 
   return { authorsRecordsIds, papersRecordsIds };
 }
@@ -73,6 +70,6 @@ async function addPaper(paper) {
     await connection.rollback();
     throw error;
   } finally {
-    connection && connection.release();
+    connection?.release();
   }
 }
