@@ -27,11 +27,12 @@ const queries = [
   },
   {
     query: `
-      SELECT SUM(CASE WHEN gender = 'female' THEN 1 ELSE 0 END) AS female_paper_count
+      SELECT COUNT(DISTINCT author_paper.paper_id) AS female_paper_count
       FROM author_paper
-      JOIN authors ON author_paper.author_id = authors.author_id;
+      JOIN authors ON author_paper.author_id = authors.author_id
+      WHERE authors.gender = 'female';
     `,
-    description: "Count of papers by female authors:",
+    description: "Count of unique papers by female authors:",
   },
   {
     query: `
