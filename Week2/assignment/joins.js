@@ -21,9 +21,10 @@ connection.query(queryAuthorsAndMentors, (error, results) => {
 
 // Query to get authors and their research papers
 const queryAuthorsAndPapers = `
-SELECT a.*, rp.paper_title
+SELECT a.author_name AS Author, rp.paper_title
 FROM authors a
-LEFT JOIN research_papers rp ON a.author_id = rp.author_id;`;
+JOIN author_paper ap ON a.author_id = ap.author_id
+JOIN research_papers rp ON ap.paper_id = rp.paper_id;`;
 
 connection.query(queryAuthorsAndPapers, (error, results) => {
     if (error) throw error;

@@ -10,16 +10,17 @@ const connection = mysql.createConnection({
 
 // Query for all research papers and the number of authors that wrote each paper
 const queryPapersAndAuthorsCount = `
-SELECT rp.paper_title, COUNT(a.author_id) AS number_of_authors
+SELECT rp.paper_title, COUNT(ap.author_id) AS number_of_authors
 FROM research_papers rp
-LEFT JOIN authors a ON rp.author_id = a.author_id
+LEFT JOIN author_paper ap ON rp.paper_id = ap.paper_id
 GROUP BY rp.paper_id;`;
 
 // Query for sum of research papers published by all female authors
 const queryFemalePapersCount = `
-SELECT COUNT(*) AS total_female_papers
+SELECT COUNT(DISTINCT rp.paper_id) AS total_female_papers
 FROM research_papers rp
-JOIN authors a ON rp.author_id = a.author_id
+JOIN author_paper ap ON rp.paper_id = ap.paper_id
+JOIN authors a ON ap.author_id = a.author_id
 WHERE a.gender = 'Female';`;
 
 // Query for average h-index of all authors per university
@@ -30,9 +31,10 @@ GROUP BY university;`;
 
 // Query for sum of research papers of authors per university
 const queryTotalPapersPerUniversity = `
-SELECT a.university, COUNT(rp.paper_id) AS total_papers
+SELECT a.university, COUNT(DISTINCT rp.paper_id) AS total_papers
 FROM authors a
-LEFT JOIN research_papers rp ON a.author_id = rp.author_id
+JOIN author_paper ap ON a.author_id = ap.author_id
+JOIN research_papers rp ON ap.paper_id = rp.paper_id
 GROUP BY a.university;`;
 
 // Query for minimum and maximum of h-index of all authors per university
@@ -41,30 +43,20 @@ SELECT university, MIN(h_index) AS min_h_index, MAX(h_index) AS max_h_index
 FROM authors
 GROUP BY university;`;
 
-connection.query(queryPapersAndAuthorsCount, (error, results) => {
-    if (error) throw error;
-    console.log('Research papers and number of authors:', results);
-});
+// Function to execute a query and log the result
+function executeQuery(query, logMessage) {
+    connection.query(query, (error, results) => {
+        if (error) throw error;
+        console.log(logMessage, results);
+    });
+}
 
-connection.query(queryFemalePapersCount, (error, results) => {
-    if (error) throw error;
-    console.log('Total research papers by female authors:', results);
-});
-
-connection.query(queryAverageHIndex, (error, results) => {
-    if (error) throw error;
-    console.log('Average H-index per university:', results);
-});
-
-connection.query(queryTotalPapersPerUniversity, (error, results) => {
-    if (error) throw error;
-    console.log('Total research papers per university:', results);
-});
-
-connection.query(queryMinMaxHIndex, (error, results) => {
-    if (error) throw error;
-    console.log('Min and Max H-index per university:', results);
-});
+// Execute the queries
+executeQuery(queryPapersAndAuthorsCount, 'Research papers and number of authors:');
+executeQuery(queryFemalePapersCount, 'Total research papers by female authors:');
+executeQuery(queryAverageHIndex, 'Average H-index per university:');
+executeQuery(queryTotalPapersPerUniversity, 'Total research papers per university:');
+executeQuery(queryMinMaxHIndex, 'Min and Max H-index per university:');
 
 // Close the connection
 connection.end();
