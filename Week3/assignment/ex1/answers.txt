@@ -1,0 +1,39 @@
+1. What columns violate 1NF?
+- Column member_id must be unique
+- dinner_date must be in in one format - date
+- food_code, food_description - each column must have atomic values
+
+2. What entities do you recognize that could be extracted?
+
+- Member, dinner, venue, food
+
+3. Name all the tables and columns that would make a 3NF compliant solution.
+ 
+Member:
+member_id - int not null unique AI PK
+member_name - varchar not null
+member_address - varchar not null
+
+Dinner:
+dinner_id - int not null unique AI PK
+dinner_date - date not null
+
+Venue:
+venue_id - int not null unique PK
+venue_description - text not null
+
+Food:
+food_id - int not null unique PK
+food_description - varchar not null
+
+Member_dinner:
+member_id - int not null FK member(member_id)
+dinner_id - int not null FK dinner(dinner_id)
+
+Dinner_venue:
+dinner_id -  int not null unique FK dinner(dinner_id)
+venue_id - int not null unique FK venue(venue_id)
+
+Dinner_food
+dinner_id - int not null unique FK dinner(dinner_id)
+food_id - int not null unique FK dinner(food_id)
