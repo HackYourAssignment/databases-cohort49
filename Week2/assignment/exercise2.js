@@ -1,18 +1,7 @@
-const mysql = require("mysql2");
-const { promisify } = require("util");
-
-const connection = mysql.createConnection({
-  host: "localhost",
-  user: "hyfuser",
-  password: "hyfpassword",
-  database: "keys_db",
-});
-
-const query = promisify(connection.query).bind(connection);
-
+const getConnection = require("./connectDatabase");
 async function createTableAndInsertData() {
+  const connection = await getConnection();
   try {
-    await promisify(connection.connect).bind(connection)();
     console.log("Connected to MySQL server");
 
     const createResearchPapersTable = `
@@ -24,7 +13,7 @@ async function createTableAndInsertData() {
         author_id INT,
         FOREIGN KEY (author_id) REFERENCES authors(author_id) ON DELETE CASCADE);
     `;
-    await query(createResearchPapersTable);
+    await connection.query(createResearchPapersTable);
     console.log("Research papers table created successfully");
 
     const inserAuthors = `
@@ -46,7 +35,7 @@ async function createTableAndInsertData() {
       ('Author 15', 'University 5', '1995-05-05', 17, 'm');
     `;
 
-    await query(inserAuthors);
+    await connection.query(inserAuthors);
     console.log("Inserted authors successfully.");
 
     const insertResearchPapers = `
@@ -83,12 +72,12 @@ async function createTableAndInsertData() {
     ('Paper 30', 'Conference A', '2024-06-01', 15);
   `;
 
-    await query(insertResearchPapers);
+    await connection.query(insertResearchPapers);
     console.log("Inserted research papers successfully.");
-
-    connection.end();
   } catch (error) {
     console.error("Error:", error);
+  } finally {
+    await connection.end();
   }
 }
 

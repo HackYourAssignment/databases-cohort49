@@ -1,18 +1,8 @@
-const mysql = require("mysql2");
-const { promisify } = require("util");
-
-const connection = mysql.createConnection({
-  host: "localhost",
-  user: "hyfuser",
-  password: "hyfpassword",
-  database: "keys_db",
-});
-
-const query = promisify(connection.query).bind(connection);
+const getConnection = require("./connectDatabase");
 
 async function createAuthorsTable() {
+  const connection = await getConnection();
   try {
-    await promisify(connection.connect).bind(connection)();
     console.log("Connected to MySQL server");
 
     const createTableQuery = `
@@ -26,7 +16,7 @@ async function createAuthorsTable() {
        );
        `;
 
-    await query(createTableQuery);
+    await connection.query(createTableQuery);
     console.log("Authors table created successfully");
 
     const checkMentorColumnQuery = `
@@ -36,7 +26,7 @@ async function createAuthorsTable() {
       AND table_name = 'authors'
       AND column_name = 'mentor';
     `;
-    const result = await query(checkMentorColumnQuery);
+    const result = await connection.query(checkMentorColumnQuery);
     const columnExists = result[0].columnExists;
 
     if (columnExists === 0) {
@@ -47,15 +37,15 @@ async function createAuthorsTable() {
       FOREIGN KEY (mentor) REFERENCES authors(author_id)
       ON DELETE SET NULL;
     `;
-      await query(addMentorColumnQuery);
+      await connection.query(addMentorColumnQuery);
       console.log("Mentor column added successfully.");
     } else {
       console.log("Mentor column already exists.");
     }
-
-    connection.end();
   } catch (error) {
     console.error("Error creating authors table:", error);
+  } finally {
+    await connection.end();
   }
 }
 
