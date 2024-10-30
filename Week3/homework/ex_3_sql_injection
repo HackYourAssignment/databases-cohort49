@@ -1,0 +1,24 @@
+function getPopulation(Country, name, code, cb) {
+  // Assuming that connection to the database is established and stored as conn
+  conn.query(
+    `SELECT Population FROM ?? WHERE Name = ? AND CountryCode = ?`,
+    [Country, name, code],
+    function (err, result) {
+      if (err) return cb(err);
+      if (result.length == 0) return cb(new Error("Not found"));
+      cb(null, result[0].Population);
+    }
+  );
+}
+
+/* 
+
+Parameterized Query: The query uses ?? and ? placeholders for Country, name, and code, respectively.
+
+?? is used for the table name, ensuring it is safely included without risk of injection.
+? is used for name and code, which protects them from injection.
+
+Secure Parameter Passing: I passed the values [Country, name, code] as an array to the query. 
+This approach ensures that these values are correctly escaped by the MySQL library, preventing SQL injection.
+
+*/
