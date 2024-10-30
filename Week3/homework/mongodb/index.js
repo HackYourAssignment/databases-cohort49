@@ -1,94 +1,81 @@
+const dotenv = require("dotenv").config();
 const { MongoClient, ServerApiVersion } = require("mongodb");
-
 const { seedDatabase } = require("./seedDatabase.js");
 
-async function createEpisodeExercise(client) {
-  /**
-   * We forgot to add the last episode of season 9. It has this information:
-   *
-   * episode: S09E13
-   * title: MOUNTAIN HIDE-AWAY
-   * elements: ["CIRRUS", "CLOUDS", "CONIFER", "DECIDIOUS", "GRASS", "MOUNTAIN", "MOUNTAINS", "RIVER", "SNOWY_MOUNTAIN", "TREE", "TREES"]
-   */
+const DATABASE_NAME = "databaseWeek3";
+const COLLECTION_NAME = "bob_ross_episodes";
 
-  // Write code that will add this to the collection!
-
+async function createEpisode(client, episode) {
+  const result = await client
+    .db(DATABASE_NAME)
+    .collection(COLLECTION_NAME)
+    .insertOne(episode);
   console.log(
-    `Created season 9 episode 13 and the document got the id ${"TODO: fill in variable here"}`
+    `Created episode "${episode.title}" with ID: ${result.insertedId}`
   );
 }
 
-async function findEpisodesExercises(client) {
-  /**
-   * Complete the following exercises.
-   * The comments indicate what to do and what the result should be!
-   */
+async function findEpisodes(client) {
+  const collection = client.db(DATABASE_NAME).collection(COLLECTION_NAME);
 
-  // Find the title of episode 2 in season 2 [Should be: WINTER SUN]
+  const episode2Season2 = await collection.findOne({ episode: "S02E02" });
+  console.log(`Episode 2 in season 2: ${episode2Season2.title}`);
 
+  const blackRiverEpisode = await collection.findOne({ title: "BLACK RIVER" });
+  console.log(`BLACK RIVER episode: ${blackRiverEpisode.episode}`);
+
+  const cliffEpisodes = await collection.find({ elements: "CLIFF" }).toArray();
   console.log(
-    `The title of episode 2 in season 2 is ${"TODO: fill in variable here"}`
+    `Episodes with CLIFF: ${cliffEpisodes.map((ep) => ep.title).join(", ")}`
   );
 
-  // Find the season and episode number of the episode called "BLACK RIVER" [Should be: S02E06]
-
+  const cliffLighthouseEpisodes = await collection
+    .find({ elements: { $all: ["CLIFF", "LIGHTHOUSE"] } })
+    .toArray();
   console.log(
-    `The season and episode number of the "BLACK RIVER" episode is ${"TODO: fill in variable here"}`
-  );
-
-  // Find all of the episode titles where Bob Ross painted a CLIFF [Should be: NIGHT LIGHT, EVENING SEASCAPE, SURF'S UP, CLIFFSIDE, BY THE SEA, DEEP WILDERNESS HOME, CRIMSON TIDE, GRACEFUL WATERFALL]
-
-  console.log(
-    `The episodes that Bob Ross painted a CLIFF are ${"TODO: fill in variable here"}`
-  );
-
-  // Find all of the episode titles where Bob Ross painted a CLIFF and a LIGHTHOUSE [Should be: NIGHT LIGHT]
-
-  console.log(
-    `The episodes that Bob Ross painted a CLIFF and a LIGHTHOUSE are ${"TODO: fill in variable here"}`
+    `Episodes with both CLIFF and LIGHTHOUSE: ${cliffLighthouseEpisodes
+      .map((ep) => ep.title)
+      .join(", ")}`
   );
 }
 
-async function updateEpisodeExercises(client) {
-  /**
-   * There are some problems in the initial data that was filled in.
-   * Let's use update functions to update this information.
-   *
-   * Note: do NOT change the data.json file
-   */
-
-  // Episode 13 in season 30 should be called BLUE RIDGE FALLS, yet it is called BLUE RIDGE FALLERS now. Fix that
-
+async function updateEpisodeTitle(client, episodeId, newTitle) {
+  const result = await client
+    .db(DATABASE_NAME)
+    .collection(COLLECTION_NAME)
+    .updateOne({ episode: episodeId }, { $set: { title: newTitle } });
   console.log(
-    `Ran a command to update episode 13 in season 30 and it updated ${"TODO: fill in variable here"} episodes`
-  );
-
-  // Unfortunately we made a mistake in the arrays and the element type called 'BUSHES' should actually be 'BUSH' as sometimes only one bush was painted.
-  // Update all of the documents in the collection that have `BUSHES` in the elements array to now have `BUSH`
-  // It should update 120 episodes!
-
-  console.log(
-    `Ran a command to update all the BUSHES to BUSH and it updated ${"TODO: fill in variable here"} episodes`
+    `Updated episode ${episodeId} title to "${newTitle}": ${result.modifiedCount} document(s) modified.`
   );
 }
 
-async function deleteEpisodeExercise(client) {
-  /**
-   * It seems an errand episode has gotten into our data.
-   * This is episode 14 in season 31. Please remove it and verify that it has been removed!
-   */
-
+async function updateBushes(client) {
+  const result = await client
+    .db(DATABASE_NAME)
+    .collection(COLLECTION_NAME)
+    .updateMany({ elements: "BUSHES" }, { $set: { "elements.$": "BUSH" } });
   console.log(
-    `Ran a command to delete episode and it deleted ${"TODO: fill in variable here"} episodes`
+    `Updated all occurrences of BUSHES to BUSH: ${result.modifiedCount} document(s) modified.`
+  );
+}
+
+async function deleteEpisode(client, episodeId) {
+  const result = await client
+    .db(DATABASE_NAME)
+    .collection(COLLECTION_NAME)
+    .deleteOne({ episode: episodeId });
+  console.log(
+    `Deleted episode ${episodeId}: ${result.deletedCount} document(s) deleted.`
   );
 }
 
 async function main() {
-  if (process.env.MONGODB_URL == null) {
-    throw Error(
-      `You did not set up the environment variables correctly. Did you create a '.env' file and add a package to create it?`
+  if (!process.env.MONGODB_URL) {
+    throw new Error(
+      "Environment variable MONGODB_URL is not set. Please check your .env file."
     );
   }
+
   const client = new MongoClient(process.env.MONGODB_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -97,41 +84,36 @@ async function main() {
 
   try {
     await client.connect();
-
-    // Seed our database
     await seedDatabase(client);
 
-    // CREATE
-    await createEpisodeExercise(client);
+    const newEpisode = {
+      episode: "S09E13",
+      title: "MOUNTAIN HIDE-AWAY",
+      elements: [
+        "CIRRUS",
+        "CLOUDS",
+        "CONIFER",
+        "DECIDIOUS",
+        "GRASS",
+        "MOUNTAIN",
+        "MOUNTAINS",
+        "RIVER",
+        "SNOWY_MOUNTAIN",
+        "TREE",
+        "TREES",
+      ],
+    };
 
-    // READ
-    await findEpisodesExercises(client);
-
-    // UPDATE
-    await updateEpisodeExercises(client);
-
-    // DELETE
-    await deleteEpisodeExercise(client);
+    await createEpisode(client, newEpisode);
+    await findEpisodes(client);
+    await updateEpisodeTitle(client, "S30E13", "BLUE RIDGE FALLS");
+    await updateBushes(client);
+    await deleteEpisode(client, "S31E14");
   } catch (err) {
-    console.error(err);
+    console.error("Error during database operations:", err);
   } finally {
-    // Always close the connection at the end
-    client.close();
+    await client.close();
   }
 }
 
 main();
-
-/**
- * In the end the console should read something like this: 
-
-Created season 9 episode 13 and the document got the id 625e9addd11e82a59aa9ff93
-The title of episode 2 in season 2 is WINTER SUN
-The season and episode number of the "BLACK RIVER" episode is S02E06
-The episodes that Bob Ross painted a CLIFF are NIGHT LIGHT, EVENING SEASCAPE, SURF'S UP, CLIFFSIDE, BY THE SEA, DEEP WILDERNESS HOME, CRIMSON TIDE, GRACEFUL WATERFALL
-The episodes that Bob Ross painted a CLIFF and a LIGHTHOUSE are NIGHT LIGHT
-Ran a command to update episode 13 in season 30 and it updated 1 episodes
-Ran a command to update all the BUSHES to BUSH and it updated 120 episodes
-Ran a command to delete episode and it deleted 1 episodes
- 
-*/
