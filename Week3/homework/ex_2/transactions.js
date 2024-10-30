@@ -1,16 +1,10 @@
 import mysql from 'mysql2/promise';
+import { databaseConnection } from './connectionOptions.js';
 
-export const pool = mysql.createPool({
-  host: 'localhost',
-  user: 'hyfuser',
-  password: 'hyfpassword',
-  database: 'account_db',
-  multipleStatements: true,
-});
+export const pool = mysql.createPool(databaseConnection);
 
-/*in a real case the account_numbers and the amount of money
-would be passed as parameters from the client side.
-Therefore, the query should use the .execute() method.
+/*in case the account_numbers and the amount of money
+is passed the query should use the .execute() method.
 
 Here a hardcoded queries are used for simplicity 
 and to show the transaction management.
@@ -28,13 +22,11 @@ async function main() {
     `);
     await conn.beginTransaction();
 
-    const { sender, receiver } = await getAccountsAndLockThem(conn);
+    const [sender, receiver] = await getAccountsAndLockThem(conn);
 
-    await isExistAndEnoughBalance(sender, receiver); //throws error if not
+    isExistAndEnoughBalance(sender, receiver); //throws error if not
 
-    await performTransaction(conn); //change balances
-
-    await logTransaction(conn);
+    await Promise.all([performTransaction(conn), logTransaction(conn)]);
 
     await conn.commit(); //if everything is ok, commit the transaction
 
@@ -50,25 +42,22 @@ async function main() {
 
 main();
 
-async function getAccountsAndLockThem(conn) {
-  const account1 = `
+function getAccountsAndLockThem(conn) {
+  const sender = `
     SELECT * FROM account
     WHERE account_number = 101
     FOR UPDATE;
   `;
-  const account2 = `
+  const reciever = `
     SELECT * FROM account
     WHERE account_number = 102
     FOR UPDATE;
   `;
 
-  const [sender] = await conn.query(account1);
-  const [receiver] = await conn.query(account2);
-
-  return { sender, receiver };
+  return Promise.all([conn.query(sender), conn.query(reciever)]);
 }
 
-async function isExistAndEnoughBalance(sender, receiver) {
+function isExistAndEnoughBalance(sender, receiver) {
   if (sender.length === 0) throw new Error('Sender account not found');
   if (receiver.length === 0) throw new Error('Receiver account not found');
   if (sender[0].balance < 1000) throw new Error('Insufficient funds');
@@ -76,7 +65,7 @@ async function isExistAndEnoughBalance(sender, receiver) {
   return true;
 }
 
-async function performTransaction(conn) {
+function performTransaction(conn) {
   const withdraw = `
     UPDATE account
     SET balance = balance - 1000
@@ -88,11 +77,10 @@ async function performTransaction(conn) {
     WHERE account_number = 102;
   `;
 
-  await conn.query(withdraw);
-  await conn.query(deposit);
+  return Promise.all([conn.query(withdraw), conn.query(deposit)]);
 }
 
-async function logTransaction(conn) {
+function logTransaction(conn) {
   const logWithdraw = `
     INSERT INTO account_changes (account_number, amount, changed_date, remark)
     VALUES (101, -1000, CURDATE(), 'Transfer to account 102');
@@ -102,6 +90,5 @@ async function logTransaction(conn) {
     VALUES (102, 1000, CURDATE(), 'Transfer from account 101');
   `;
 
-  await conn.query(logWithdraw);
-  await conn.query(logDeposit);
+  return Promise.all([conn.query(logWithdraw), conn.query(logDeposit)]);
 }

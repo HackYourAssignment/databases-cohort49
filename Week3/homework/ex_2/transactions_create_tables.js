@@ -1,24 +1,7 @@
-import fs from 'fs/promises';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
 import mysql from 'mysql2/promise';
+import { serverConnection } from './connectionOptions.js';
+import fileQuery from './fileQuery.js';
 
-export const pool = mysql.createPool({
-  host: 'localhost',
-  user: 'hyfuser',
-  password: 'hyfpassword',
-  multipleStatements: true,
-});
+export const pool = mysql.createPool(serverConnection);
 
-async function main() {
-  const currentDir = dirname(fileURLToPath(import.meta.url));
-  const sqlFilePath = `${currentDir}/transactions_create_tables.sql`;
-
-  const createQuery = await fs.readFile(sqlFilePath, 'utf-8');
-
-  await pool.query(createQuery);
-}
-
-main()
-  .catch(console.error)
-  .finally(() => pool.end());
+fileQuery(pool, 'transactions_create_tables');

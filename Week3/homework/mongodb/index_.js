@@ -59,41 +59,44 @@ async function findEpisodesExercises(collection) {
   const filter3 = { elements: 'CLIFF' }; //or $elemMatch: {$eq: 'CLIFF'}, $in: ['CLIFF']
   const filter4 = { elements: { $all: ['CLIFF', 'LIGHTHOUSE'] } }; //or $and: [{elements: 'CLIFF'}, {elements: 'LIGHTHOUSE'}]
 
-  const result1 = await collection.findOne(filter1); //[WINTER SUN]
-  const result2 = await collection.findOne(filter2); //[S02E06]
-  const result3 = await collection.find(filter3).toArray(); //[NIGHT LIGHT, EVENING SEASCAPE, SURF'S UP, CLIFFSIDE, BY THE SEA, DEEP WILDERNESS HOME, CRIMSON TIDE, GRACEFUL WATERFALL]
-  const result4 = await collection.find(filter4).toArray(); //[NIGHT LIGHT]
+  const [result1, result2, result3, result4] = await Promise.all([
+    collection.findOne(filter1),
+    collection.findOne(filter2),
+    collection.find(filter3).toArray(),
+    collection.find(filter4).toArray(),
+  ]);
 
   const episodesTitles3 = result3.map((episode) => episode.title).join(', ');
   const episodesTitles4 = result4.map((episode) => episode.title).join(', ');
 
-  console.log(`The title of episode 2 in season 2 is ${result1.title}`);
-  console.log(
+  const logs = [
+    `The title of episode 2 in season 2 is ${result1.title}`,
     `The season and episode number of the "BLACK RIVER" episode is ${result2.episode}`,
-  );
-  console.log(
     `The episodes that Bob Ross painted a CLIFF are: ${episodesTitles3}.`,
-  );
-  console.log(
     `The episodes that Bob Ross painted a CLIFF and a LIGHTHOUSE are: ${episodesTitles4}`,
-  );
+  ];
+
+  logs.forEach((l) => console.log(l));
 }
 
 async function updateEpisodeExercises(collection) {
   const filter = { episode: 'S30E13' };
   const update = { $set: { title: 'BLUE RIDGE FALLS' } };
-  const result = await collection.updateOne(filter, update); //one episode
 
   const filterAll = { elements: 'BUSHES' };
   const updateAll = { $set: { 'elements.$[]': 'BUSH' } }; //or elements.$: 'BUSH'
-  const resultAll = await collection.updateMany(filterAll, updateAll); //120 episode
 
-  console.log(
+  const [result, resultAll] = await Promise.all([
+    collection.updateOne(filter, update),
+    collection.updateMany(filterAll, updateAll),
+  ]);
+
+  const logs = [
     `Ran a command to update episode 13 in season 30 and it updated ${result.modifiedCount} episodes`,
-  );
-  console.log(
     `Ran a command to update all the BUSHES to BUSH and it updated ${resultAll.modifiedCount} episodes`,
-  );
+  ];
+
+  logs.forEach((l) => console.log(l));
 }
 
 async function deleteEpisodeExercise(collection) {
