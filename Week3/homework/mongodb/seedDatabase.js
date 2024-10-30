@@ -1,4 +1,4 @@
-const data = require("./data.json");
+import data from "./data.json" assert { type: "json" };
 
 /**
  * This function will drop and recreate the collection of sample data in our csv file.
@@ -46,6 +46,4 @@ const seedDatabase = async (client) => {
   }
 };
 
-module.exports = {
-  seedDatabase,
-};
+export { seedDatabase };
