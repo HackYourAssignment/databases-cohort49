@@ -22,44 +22,48 @@ const main = async () => {
         await connection.query(dropTable4);
         await connection.query(dropTable3);
 
-        const CreateTableResearchPaper = `
-            CREATE TABLE IF NOT EXISTS research_paper (
-                paper_id INT AUTO_INCREMENT PRIMARY KEY,
-                paper_name VARCHAR(200) NOT NULL,
-                conference_name VARCHAR(50) NOT NULL,
-                author_id INT,
-                publication_date DATE NOT NULL,
-                university VARCHAR(100) NOT NULL,
-                FOREIGN KEY (author_id) REFERENCES author(author_id)
-            )`;
-
-        const CreateTableResearchPaperAuthor = `
-            CREATE TABLE IF NOT EXISTS research_paper_author (
-                paper_id INT,
-                author_id INT,
-                FOREIGN KEY (paper_id) REFERENCES research_paper(paper_id),
-                FOREIGN KEY (author_id) REFERENCES author(author_id)
-            )`;
-
         const createTableMentors = `
             CREATE TABLE IF NOT EXISTS mentor (
                 mentor_id INT AUTO_INCREMENT PRIMARY KEY,
                 mentor_name VARCHAR(50) NOT NULL
             );`;
 
-        const createTableAuthorMentor = `
-            CREATE TABLE IF NOT EXISTS author_mentor (
-                author_id INT,
+        const createTableAuthors = `
+            CREATE TABLE IF NOT EXISTS author (
+                author_id INT AUTO_INCREMENT PRIMARY KEY,
+                author_name VARCHAR(50) NOT NULL,
+                date_of_birth DATE,
+                h_index INT,
+                gender CHAR(1),
                 mentor_id INT,
-                FOREIGN KEY (author_id) REFERENCES author(author_id),
                 FOREIGN KEY (mentor_id) REFERENCES mentor(mentor_id)
             );`;
 
-        await connection.query(CreateTableResearchPaper);
-        await connection.query(CreateTableResearchPaperAuthor);
+        const createTableResearchPaper = `
+            CREATE TABLE IF NOT EXISTS research_paper (
+                paper_id INT AUTO_INCREMENT PRIMARY KEY,
+                paper_name VARCHAR(200) NOT NULL,
+                conference_name VARCHAR(50) NOT NULL,
+                publication_date DATE NOT NULL,
+                university VARCHAR(100) NOT NULL
+            );`;
+
+        const createTableResearchPaperAuthor = `
+            CREATE TABLE IF NOT EXISTS research_paper_author (
+                paper_id INT,
+                author_id INT,
+                PRIMARY KEY (paper_id, author_id),  -- Compound primary key
+                FOREIGN KEY (paper_id) REFERENCES research_paper(paper_id),
+                FOREIGN KEY (author_id) REFERENCES author(author_id)
+            );`;
+
         await connection.query(createTableMentors);
-        await connection.query(createTableAuthorMentor);
-        console.log("Tables created");
+        await connection.query(createTableAuthors);
+        await connection.query(createTableResearchPaper);
+        await connection.query(createTableResearchPaperAuthor);
+        console.log("Tables created successfully");
+
+    
 
         const insertDataToResearchPaper = `
             INSERT INTO research_paper (paper_name, conference_name, author_id, publication_date, university) VALUES 

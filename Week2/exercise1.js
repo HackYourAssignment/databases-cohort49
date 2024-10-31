@@ -24,38 +24,43 @@ const main = async () => {
         await connection.query(createTableAuthor);
         console.log("Table created");
 
-        const addColumn = "ALTER TABLE author ADD COLUMN mentor INT";
-
-        await connection.query(addColumn);
-        console.log("Column added");
-
-        const addConstraint =
-            "ALTER TABLE author ADD CONSTRAINT mentor_fk FOREIGN KEY (mentor) REFERENCES author(author_id)";
-
-        await connection.query(addConstraint);
+        try {
+            const addColumnAndConstraint = `
+                ALTER TABLE author 
+                ADD COLUMN mentor INT,
+                ADD CONSTRAINT mentor_fk FOREIGN KEY (mentor) REFERENCES author(author_id)
+            `;
+        
+            await connection.query(addColumnAndConstraint);
+            console.log("Column and foreign key constraint added successfully");
+        } catch (error) {
+            console.error("Failed to add column and constraint:", error);
+        }
         console.log("Constraint added");
+
+        // automated data generation
+        const authors = [];
+        const names = ['John', 'Mark', 'Tim', 'Jo', 'Max', 'Nima', 'Fred', 'Kim', 'Sara', 'Chester', 'Kevin', 'Fill', 'Liam', 'Liana', 'Withney'];
+        const genders = ['f', 'm'];
+        const mentorIds = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+        for (let i = 0; i < 15; i++) {
+            const name = names[i % names.length];
+            const dateOfBirth = `${1980 + Math.floor(Math.random() * 25)}-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`;
+            const hIndex = Math.floor(Math.random() * 10) + 1;
+            const gender = genders[i % 2];
+            const mentor = mentorIds[Math.floor(Math.random() * mentorIds.length)];
+
+            authors.push(`('${name}', '${dateOfBirth}', ${hIndex}, '${gender}', ${mentor})`);
+        }
 
         const insertQuery = `
             INSERT INTO author (author_name, date_of_birth, h_index, gender, mentor) VALUES
-            ('John', '1995-03-19', 10, 'f', 1),
-            ('Mark', '1991-12-11', 9, 'f', 2),
-            ('Tim', '1992-12-21', 8, 'm', 3),
-            ('Jo', '1990-12-29', 7, 'm', 4),
-            ('Max', '1994-02-19', 6, 'm', 5),
-            ('Nima', '1995-04-14', 5, 'f', 6),
-            ('Fred', '1997-12-16', 4, 'f', 1),
-            ('Kim', '1992-01-04', 3, 'm', 7),
-            ('Sara', '1988-10-03', 2, 'f', 8),
-            ('Chester', '2000-07-14', 1, 'm', 9),
-            ('Kevin', '1998-11-24', 2, 'f', 2),
-            ('Fill', '1999-02-14', 1, 'm', 3),
-            ('Liam', '1982-03-01', 2, 'f', 4),
-            ('Liana', '1998-10-06', 1, 'm', 5),
-            ('Withney', '1992-01-02', 8, 'f', 6);
-        `;
+            ${authors.join(',\n')}
+        ;`;
 
         await connection.query(insertQuery);
-        console.log("Data inserted");
+        console.log("Data inserted dynamically");
     } catch (error) {
         console.log("error:", error.message);
         console.log("error:", error.stack);

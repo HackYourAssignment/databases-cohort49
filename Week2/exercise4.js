@@ -12,29 +12,47 @@ const main = async () => {
     try {
         const queries = [
             {
-                description: "All research papers and the id of authors",
-                query:
-                    "SELECT research_paper.paper_name, author.author_id FROM research_paper JOIN author ON research_paper.author_id = author.author_id",
+                description: "All research papers and the number of authors that wrote that paper",
+                query: `
+                    SELECT research_paper.paper_name, COUNT(research_paper_author.author_id) AS author_count 
+                    FROM research_paper 
+                    JOIN research_paper_author ON research_paper.paper_id = research_paper_author.paper_id 
+                    GROUP BY research_paper.paper_id;
+                `,
             },
             {
                 description: "Sum of the research papers published by all female authors",
-                query:
-                    "SELECT COUNT(research_paper.paper_id), author.gender FROM research_paper JOIN author ON research_paper.author_id = author.author_id WHERE author.gender = 'f';",
+                query: `
+                    SELECT COUNT(research_paper_author.paper_id) AS female_paper_count 
+                    FROM research_paper_author 
+                    JOIN author ON research_paper_author.author_id = author.author_id 
+                    WHERE author.gender = 'f';
+                `,
             },
             {
                 description: "Average of the h-index of all authors per university",
-                query:
-                    "SELECT AVG(author.h_index), research_paper.university FROM author LEFT JOIN research_paper ON author.author_id = research_paper.author_id GROUP BY research_paper.university;",
+                query: `
+                    SELECT AVG(author.h_index) AS average_h_index, author.university 
+                    FROM author 
+                    GROUP BY author.university;
+                `,
             },
             {
                 description: "Sum of the research papers of the authors per university",
-                query:
-                    "SELECT COUNT(research_paper.paper_id), research_paper.university FROM research_paper GROUP BY research_paper.university;",
+                query: `
+                    SELECT author.university, COUNT(research_paper_author.paper_id) AS paper_count 
+                    FROM research_paper_author 
+                    JOIN author ON research_paper_author.author_id = author.author_id 
+                    GROUP BY author.university;
+                `,
             },
             {
-                description: "All authors and the title of their published papers",
-                query:
-                    "SELECT MAX(author.h_index), MIN(author.h_index), research_paper.university FROM author JOIN research_paper ON author.author_id = research_paper.author_id GROUP BY research_paper.university;",
+                description: "Minimum and maximum of the h-index of all authors per university",
+                query: `
+                    SELECT author.university, MIN(author.h_index) AS min_h_index, MAX(author.h_index) AS max_h_index 
+                    FROM author 
+                    GROUP BY author.university;
+                `,
             },
         ];
 
@@ -50,4 +68,5 @@ const main = async () => {
         await connection.end();
     }
 };
+
 main();
