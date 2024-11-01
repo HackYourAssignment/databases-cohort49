@@ -1,6 +1,6 @@
 const mysql = require('mysql2/promise');
 
-async function getPopulation (country, name, code) {
+async function getPopulation(country, name, code, cb) {
     const connection = await mysql.createConnection({
         host: 'localhost',
         user: 'hyfuser',
@@ -14,13 +14,25 @@ async function getPopulation (country, name, code) {
             [country, name, code]
         );
 
-        if (rows.length === 0) throw new Error('Not found');
-        return rows[0].Population;
+
+        if (rows.length === 0) {
+            return cb(new Error('Not found'));
+        }
+
+        cb(null, rows[0].Population);
     } catch (error) {
-        console.error('Error fetching population:', error.message);
+        cb(error); 
     } finally {
-        connection.end();
+        await connection.end(); 
     }
 }
+
+getPopulation('CountryTable', 'CountryName', 'CountryCode', (err, population) => {
+    if (err) {
+        console.error('Error:', err.message);
+    } else {
+        console.log('Population:', population);
+    }
+});
 
 module.exports = { getPopulation };
