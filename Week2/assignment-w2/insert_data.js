@@ -1,16 +1,22 @@
 import connection from './dbconnection.js';
 
 const runQuery = (query, description) => {
-  connection.query(query, (err, result) => {
-    if (err) {
-      console.log(`Error executing ${description}:`, err);
-      return;
-    }
-    console.log(`${description} executed successfully`, result);
+  return new Promise((resolve, reject) => {
+    connection.query(query, (err, result) => {
+      if (err) {
+        console.log(`Error executing ${description}:`, err);
+        reject(err);
+      } else {
+        console.log(`${description} executed successfully`, result);
+        resolve(result);
+      }
+    });
   });
 };
 // insert data into authors table
-const insertAuthorsQuery = `
+const insertData = async () => {
+  try {
+    const insertAuthorsQuery = `
   INSERT INTO authors (author_name, university, date_of_birth, h_index,gender,mentor) 
   VALUES
   ('John Doe', 'Harvard University', '1990-01-01', 10, 'm', NULL),
@@ -29,11 +35,11 @@ const insertAuthorsQuery = `
   ('Linda', 'University of Madrid', '2003-01-01', 23, 'f', 7),
   ('Michael', 'University of Rome', '2004-01-01', 24, 'm', 7)
   ;`;
-runQuery(insertAuthorsQuery, 'inserting data into authors table');
+    await runQuery(insertAuthorsQuery, 'inserting data into authors table');
 
-// insert data into research_paper table
+    // insert data into research_paper table
 
-const insertResearchPaperQuery = `
+    const insertResearchPaperQuery = `
   INSERT INTO research_paper (paper_title, conference, published_date, authors_id)
   VALUES
         ('Quantum Computing', 'QuantumCon', '2023-11-10', 2),
@@ -67,5 +73,15 @@ const insertResearchPaperQuery = `
         ('Edge Computing', 'EdgeConf', '2024-03-12', 15),
         ('Quantum Machine Learning', 'QuantumML', '2023-10-30', 1);
     `;
-runQuery(insertResearchPaperQuery, 'inserting data into research_paper table');
-connection.end();
+    await runQuery(
+      insertResearchPaperQuery,
+      'inserting data into research_paper table',
+    );
+  } catch (err) {
+    console.log('Error occurred while inserting data:', err);
+  } finally {
+    connection.end();
+  }
+};
+
+insertData();
