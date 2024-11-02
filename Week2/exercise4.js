@@ -17,7 +17,7 @@ function runQuery(query, description) {
 
 const queries = [
     {
-        query: `SELECT paper_title, COUNT(author_id) AS author_count FROM author_paper JOIN research_papers ON author_paper.paper_id = research_papers.paper_id GROUP BY paper_title;`,
+        query: `SELECT paper_id, COUNT(author_id) AS author_count FROM author_paper GROUP BY paper_id;`,
         description: "Research papers and author count:",
     },
     {
@@ -29,7 +29,11 @@ const queries = [
         description: "Average H-index per university:",
     },
     {
-        query: `SELECT university, COUNT(research_papers.paper_id) AS paper_count FROM authors LEFT JOIN author_paper ON authors.author_id = author_paper.author_id LEFT JOIN research_papers ON author_paper.paper_id = research_papers.paper_id GROUP BY university;`,
+        query: `SELECT university, COUNT(DISTINCT research_papers.paper_id) AS paper_count 
+                FROM authors 
+                LEFT JOIN author_paper ON authors.author_id = author_paper.author_id 
+                LEFT JOIN research_papers ON author_paper.paper_id = research_papers.paper_id 
+                GROUP BY university;`,
         description: "Papers per university:",
     },
     {
