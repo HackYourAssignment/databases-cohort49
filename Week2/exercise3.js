@@ -1,38 +1,38 @@
-import mysql from "mysql2/promise";
+const mysql = require("mysql");
 
-const connection = await mysql.createConnection({
+const connection = mysql.createConnection({
     host: "localhost",
     user: "hyfuser",
     password: "nima",
-    database: "author_db",
 });
 
-const main = async () => {
+connection.connect();
+
+const authorsAndMentors = `
+    SELECT a1.author_name AS author,
+    a2.author_name AS mentor 
+    FROM authors a1 
+    LEFT JOIN authors a2 ON a1.mentor = a2.author_id;`;
+
+const authorsAndPapers = `
+    SELECT authors.author_name,
+    research_papers.paper_title 
+    FROM authors 
+    LEFT JOIN author_paper ON authors.author_id = author_paper.author_id 
+    LEFT JOIN research_papers ON author_paper.paper_id = research_papers.paper_id;`;
+
+async function runQueries() {
     try {
-        const queries = [
-            {
-                description: "All authors and their corresponding mentors",
-                query:
-                    "SELECT author.author_name, mentor.mentor_name FROM author JOIN mentor ON author.mentor = mentor.mentor_id",
-            },
-            {
-                description: "All authors and the title of their published papers.",
-                query:
-                    "SELECT author.author_name, research_paper.paper_name FROM author LEFT JOIN research_paper ON author.author_id = research_paper.author_id",
-            },
-        ];
+        const mentorsResult = await connection.query(authorsAndMentors);
+        console.log("Authors and mentors:", mentorsResult);
 
-        for (const { description, query } of queries) {
-            console.log(description);
-            const [rows] = await connection.query(query);
-            console.table(rows);
-        }
+        const papersResult = await connection.query(authorsAndPapers);
+        console.log("Authors and papers:", papersResult);
     } catch (error) {
-        console.log("error:", error.message);
-        console.log("error:", error.stack);
+        console.error(error);
     } finally {
-        await connection.end();
+        connection.end();
     }
-};
+}
 
-main();
+runQueries();

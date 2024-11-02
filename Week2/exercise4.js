@@ -1,72 +1,43 @@
-import mysql2 from "mysql2/promise";
+const mysql = require("mysql");
 
-const connection = await mysql2.createConnection({
+const connection = mysql.createConnection({
     host: "localhost",
     user: "hyfuser",
     password: "nima",
-    database: "author_db",
 });
-console.log("Connected as id " + connection.threadId);
 
-const main = async () => {
-    try {
-        const queries = [
-            {
-                description: "All research papers and the number of authors that wrote that paper",
-                query: `
-                    SELECT research_paper.paper_name, COUNT(research_paper_author.author_id) AS author_count 
-                    FROM research_paper 
-                    JOIN research_paper_author ON research_paper.paper_id = research_paper_author.paper_id 
-                    GROUP BY research_paper.paper_id;
-                `,
-            },
-            {
-                description: "Sum of the research papers published by all female authors",
-                query: `
-                    SELECT COUNT(research_paper_author.paper_id) AS female_paper_count 
-                    FROM research_paper_author 
-                    JOIN author ON research_paper_author.author_id = author.author_id 
-                    WHERE author.gender = 'f';
-                `,
-            },
-            {
-                description: "Average of the h-index of all authors per university",
-                query: `
-                    SELECT AVG(author.h_index) AS average_h_index, author.university 
-                    FROM author 
-                    GROUP BY author.university;
-                `,
-            },
-            {
-                description: "Sum of the research papers of the authors per university",
-                query: `
-                    SELECT author.university, COUNT(research_paper_author.paper_id) AS paper_count 
-                    FROM research_paper_author 
-                    JOIN author ON research_paper_author.author_id = author.author_id 
-                    GROUP BY author.university;
-                `,
-            },
-            {
-                description: "Minimum and maximum of the h-index of all authors per university",
-                query: `
-                    SELECT author.university, MIN(author.h_index) AS min_h_index, MAX(author.h_index) AS max_h_index 
-                    FROM author 
-                    GROUP BY author.university;
-                `,
-            },
-        ];
+connection.connect();
 
-        for (const { description, query } of queries) {
-            console.log(description);
-            const [rows] = await connection.query(query);
-            console.table(rows);
-        }
-    } catch (error) {
-        console.log("error:", error.message);
-        console.log("error:", error.stack);
-    } finally {
-        await connection.end();
-    }
-};
+function runQuery(query, description) {
+    connection.query(query, (error, results) => {
+        if (error) throw error;
+        console.log(description, results);
+    });
+}
 
-main();
+const queries = [
+    {
+        query: `SELECT paper_title, COUNT(author_id) AS author_count FROM author_paper JOIN research_papers ON author_paper.paper_id = research_papers.paper_id GROUP BY paper_title;`,
+        description: "Research papers and author count:",
+    },
+    {
+        query: `SELECT COUNT(DISTINCT author_paper.paper_id) AS female_paper_count FROM author_paper JOIN authors ON author_paper.author_id = authors.author_id WHERE authors.gender = 'female';`,
+        description: "Count of unique papers by female authors:",
+    },
+    {
+        query: `SELECT university, AVG(h_index) AS avg_h_index FROM authors GROUP BY university;`,
+        description: "Average H-index per university:",
+    },
+    {
+        query: `SELECT university, COUNT(research_papers.paper_id) AS paper_count FROM authors LEFT JOIN author_paper ON authors.author_id = author_paper.author_id LEFT JOIN research_papers ON author_paper.paper_id = research_papers.paper_id GROUP BY university;`,
+        description: "Papers per university:",
+    },
+    {
+        query: `SELECT university, MIN(h_index) AS min_h_index, MAX(h_index) AS max_h_index FROM authors GROUP BY university;`,
+        description: "Min and Max H-index per university:",
+    },
+];
+
+queries.forEach(({ query, description }) => runQuery(query, description));
+
+connection.end();
