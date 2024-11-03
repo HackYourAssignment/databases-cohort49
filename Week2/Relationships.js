@@ -33,6 +33,7 @@ async function createResearchPapersTable(connection) {
       conference VARCHAR(255),
       publish_date DATE,
       author_id INT,
+      PRIMARY KEY (paper_id, author_id),
       FOREIGN KEY (author_id) REFERENCES authors(author_id)
     );
   `;
