@@ -8,6 +8,17 @@ const connection = mysql.createConnection({
 
 connection.connect();
 
+const createAuthorsTable = `
+    CREATE TABLE IF NOT EXISTS authors (
+        author_id INT AUTO_INCREMENT PRIMARY KEY,
+        author_name VARCHAR(100),
+        university VARCHAR(100),
+        date_of_birth DATE,
+        h_index INT,
+        gender ENUM('m', 'f')
+    );
+`;
+
 const createResearchPapersTable = `
     CREATE TABLE IF NOT EXISTS research_papers (
         paper_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -80,8 +91,28 @@ const insertResearchPapers = `
     ('Paper 30', 'Conference A', '2024-06-01');
 `;
 
+const insertAuthorPaper = `
+    INSERT INTO author_paper (author_id, paper_id) VALUES
+    (1, 1), (1, 2), (1, 3),
+    (2, 4), (2, 5), (2, 6),
+    (3, 7), (3, 8), (3, 9),
+    (4, 10), (4, 11), (4, 12),
+    (5, 13), (5, 14), (5, 15),
+    (6, 16), (6, 17), (6, 18),
+    (7, 19), (7, 20), (7, 21),
+    (8, 22), (8, 23), (8, 24),
+    (9, 25), (9, 26), (9, 27),
+    (10, 28), (10, 29), (10, 30),
+    (11, 1), (11, 4), (11, 7),
+    (12, 10), (12, 13), (12, 16),
+    (13, 19), (13, 22), (13, 25),
+    (14, 28), (14, 2), (14, 5),
+    (15, 8), (15, 11), (15, 14)
+`;
+
 async function setupDatabase() {
     try {
+        await connection.query(createAuthorsTable);
         await connection.query(createResearchPapersTable);
         await connection.query(createAuthorPaperTable);
         
@@ -90,6 +121,9 @@ async function setupDatabase() {
 
         await connection.query(insertResearchPapers);
         console.log("Inserted research papers successfully.");
+
+        await connection.query(insertAuthorPaper);
+        console.log("Inserted author-paper associations successfully.");
         
         console.log("Tables created and data inserted.");
     } catch (error) {
