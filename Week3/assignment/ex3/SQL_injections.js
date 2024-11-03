@@ -1,6 +1,4 @@
-const mysql = require('mysql2/promise');
-
-async function getPopulation(country, name, code, cb) {
+async function getPopulation(country, name = null, code = null, cb) {
     const connection = await mysql.createConnection({
         host: 'localhost',
         user: 'hyfuser',
@@ -9,30 +7,36 @@ async function getPopulation(country, name, code, cb) {
     });
 
     try {
-        const [rows] = await connection.execute(
-            `SELECT Population FROM ?? WHERE Name = ? AND Code = ?`,
-            [country, name, code]
-        );
+        let query = `SELECT Population FROM ??`;
+        let queryParams = [country];
 
+        if (name) {
+            query += ` WHERE Name = ?`;
+            queryParams.push(name);
+        }
+        if (code) {
+            query += name ? ` AND Code = ?` : ` WHERE Code = ?`;
+            queryParams.push(code);
+        }
+
+        const [rows] = await connection.execute(query, queryParams);
 
         if (rows.length === 0) {
             return cb(new Error('Not found'));
         }
 
-        cb(null, rows[0].Population);
+        cb(null, rows);
     } catch (error) {
-        cb(error); 
+        cb(error);
     } finally {
-        await connection.end(); 
+        await connection.end();
     }
 }
 
-getPopulation('CountryTable', 'CountryName', 'CountryCode', (err, population) => {
+getPopulation('CountryTable', null, null, (err, populations) => {
     if (err) {
         console.error('Error:', err.message);
     } else {
-        console.log('Population:', population);
+        console.log('Populations:', populations);
     }
 });
-
-module.exports = { getPopulation };

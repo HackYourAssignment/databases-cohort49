@@ -1,48 +1,45 @@
 1. What columns violate 1NF?
 
-- member_id: The column must be unique; duplicates would violate 1NF by allowing non-unique identifiers.
-- dinner_date: This should be in a single, consistent date format to avoid mixed data formats, which violates atomicity in 1NF.
-- food_code, food_description: Each column should contain atomic values; currently, they may contain multiple pieces of information or concatenated values.
+    - member_id: This column must be unique; duplicates would violate 1NF by allowing non-unique identifiers.
+    - dinner_date: This should be in a single, consistent date format to avoid mixed data formats, which violates atomicity in 1NF.
+    - food_code, food_description: Each column should contain atomic values; currently, they may contain multiple pieces of information or concatenated values.
 
 ---
 
 2. What entities do you recognize that could be extracted?
 
-- The following entities are identified:
-    - food
-    - dinner
-    - venue
-    - member
+    - The following entities are identified:
+      - food
+      - dinner
+      - venue
+      - member
 
 ---
 
 3. Name all the tables and columns that would make a 3NF compliant solution.
 
-Member:
-- member_id: `INT NOT NULL UNIQUE AUTO_INCREMENT PRIMARY KEY`
-- member_name: `VARCHAR NOT NULL`
-- member_address: `VARCHAR NOT NULL`
-
-Dinner:
-- dinner_id: `INT NOT NULL UNIQUE AUTO_INCREMENT PRIMARY KEY`
-- dinner_date: `DATE NOT NULL`
-
-Venue:
-- venue_id: `INT NOT NULL UNIQUE PRIMARY KEY`
-- venue_description: `TEXT NOT NULL`
-
-Food:
-- food_id: `INT NOT NULL UNIQUE PRIMARY KEY`
-- food_description: `VARCHAR NOT NULL`
-
-Member_dinner (Associative table for members and dinners):
-- member_id: `INT NOT NULL`, foreign key referencing Member(member_id)
-- dinner_id: `INT NOT NULL`, foreign key referencing Dinner(dinner_id)
-
-Dinner_venue (Associative table linking dinners and venues):
-- dinner_id: `INT NOT NULL UNIQUE`, foreign key referencing Dinner(dinner_id)
-- venue_id: `INT NOT NULL UNIQUE`, foreign key referencing Venue(venue_id)
-
-Dinner_food (Associative table linking dinners and foods served):
-- dinner_id: `INT NOT NULL UNIQUE`, foreign key referencing Dinner(dinner_id)
-- food_id: `INT NOT NULL UNIQUE`, foreign key referencing Food(food_id)
+    - Member:
+      - member_id: INT NOT NULL UNIQUE AUTO_INCREMENT PRIMARY KEY
+      - member_name: VARCHAR NOT NULL
+      - member_address: VARCHAR NOT NULL
+    
+    - Dinner:
+      - dinner_id: INT NOT NULL UNIQUE AUTO_INCREMENT PRIMARY KEY
+      - dinner_date: DATE NOT NULL
+      - venue_id: INT NOT NULL, FOREIGN KEY REFERENCES Venue(venue_id)  *(added foreign key to directly associate each dinner with a venue)*
+    
+    - Venue:
+      - venue_id: INT NOT NULL UNIQUE PRIMARY KEY
+      - venue_description: TEXT NOT NULL
+    
+    - Food:
+      - food_id: INT NOT NULL UNIQUE PRIMARY KEY
+      - food_description: VARCHAR NOT NULL
+    
+    - Member_dinner (Associative table for members and dinners):
+      - member_id: INT NOT NULL, FOREIGN KEY REFERENCES Member(member_id)
+      - dinner_id: INT NOT NULL, FOREIGN KEY REFERENCES Dinner(dinner_id)
+    
+    - Dinner_food (Associative table linking dinners and foods served):
+      - dinner_id: INT NOT NULL, FOREIGN KEY REFERENCES Dinner(dinner_id)
+      - food_id: INT NOT NULL, FOREIGN KEY REFERENCES Food(food_id)

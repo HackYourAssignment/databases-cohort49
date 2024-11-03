@@ -13,7 +13,7 @@ async function main() {
         const createTables = `
             CREATE TABLE IF NOT EXISTS account (
                 account_number INT AUTO_INCREMENT PRIMARY KEY, 
-                balance INT NOT NULL
+                balance DECIMAL(10,2) NOT NULL
             );
             CREATE TABLE IF NOT EXISTS account_changes (
                 change_number INT AUTO_INCREMENT PRIMARY KEY,
