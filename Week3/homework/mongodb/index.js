@@ -1,9 +1,15 @@
-import {MongoClient, ServerApiVersion } from "mongodb";
+import { MongoClient, ServerApiVersion } from "mongodb";
 
 import { seedDatabase } from "./seedDatabase.js";
 
 import dotenv from "dotenv";
 dotenv.config();
+
+const database = "databaseWeek3";
+const collection = "bob_ross_episodes";
+const getCollection = (client) =>
+  client.db(database).collection(collection);
+
 
 async function createEpisodeExercise(client) {
   /**
@@ -15,28 +21,24 @@ async function createEpisodeExercise(client) {
    */
 
   // Write code that will add this to the collection!
-
-  const result = await client
-    .db("databaseWeek3")
-    .collection("bob_ross_episodes")
-    .insertOne({
-      episode: "S09E13",
-      title: "MOUNTAIN HIDE-AWAY",
-      elements: [
-        "CIRRUS",
-        "CLOUDS",
-        "CONIFER",
-        "DECIDIOUS",
-        "GRASS",
-        "MOUNTAIN",
-        "MOUNTAINS",
-        "RIVER",
-        "SNOWY_MOUNTAIN",
-        "TREE",
-        "TREES",
-      ],
-    });
-
+   
+  const result = await getCollection(client).insertOne({
+    episode: "S09E13",
+    title: "MOUNTAIN HIDE-AWAY",
+    elements: [
+      "CIRRUS",
+      "CLOUDS",
+      "CONIFER",
+      "DECIDIOUS",
+      "GRASS",
+      "MOUNTAIN",
+      "MOUNTAINS",
+      "RIVER",
+      "SNOWY_MOUNTAIN",
+      "TREE",
+      "TREES",
+    ],
+  });
   console.log(
     `Created season 9 episode 13 and the document got the id ${result.insertedId}`
   );
@@ -50,18 +52,15 @@ async function findEpisodesExercises(client) {
 
   // Find the title of episode 2 in season 2 [Should be: WINTER SUN]
 
-  const result = await client
-    .db("databaseWeek3")
-    .collection("bob_ross_episodes")
-    .findOne({ episode: "S02E02" });
+  const result = await getCollection(client).findOne({ episode: "S02E02" });
 
   console.log(`The title of episode 2 in season 2 is ${result.title}`);
 
   // Find the season and episode number of the episode called "BLACK RIVER" [Should be: S02E06]
 
   const result1 = await client
-    .db("databaseWeek3")
-    .collection("bob_ross_episodes")
+    .db(database)
+    .collection(collection)
     .findOne({ title: "BLACK RIVER" });
 
   console.log(
@@ -70,18 +69,14 @@ async function findEpisodesExercises(client) {
 
   // Find all of the episode titles where Bob Ross painted a CLIFF [Should be: NIGHT LIGHT, EVENING SEASCAPE, SURF'S UP, CLIFFSIDE, BY THE SEA, DEEP WILDERNESS HOME, CRIMSON TIDE, GRACEFUL WATERFALL]
 
-  const result2 = await client
-    .db("databaseWeek3")
-    .collection("bob_ross_episodes")
+  const result2 = await getCollection(client)
     .find({ elements: "CLIFF" })
     .toArray();
   const resultLayout = result2.map((episode) => episode.title).join(", ");
   console.log(`The episodes that Bob Ross painted a CLIFF are ${resultLayout}`);
 
   // Find all of the episode titles where Bob Ross painted a CLIFF and a LIGHTHOUSE [Should be: NIGHT LIGHT]
-  const result3 = await client
-    .db("databaseWeek3")
-    .collection("bob_ross_episodes")
+  const result3 = await getCollection(client)
     .find({ elements: ["CLIFF", "LIGHTHOUSE"] })
     .toArray();
   const resultLayout1 = result3.map((episode) => episode.title).join(", ");
@@ -100,9 +95,7 @@ async function updateEpisodeExercises(client) {
 
   // Episode 13 in season 30 should be called BLUE RIDGE FALLS, yet it is called BLUE RIDGE FALLERS now. Fix that
 
-  const result = await client
-    .db("databaseWeek3")
-    .collection("bob_ross_episodes")
+  const result = await getCollection(client)
     .updateOne({ episode: "S30E13" }, { $set: { title: "BLUE RIDGE FALLS" } });
   console.log(
     `Ran a command to update episode 13 in season 30 and it updated ${result.modifiedCount} episodes`
@@ -112,9 +105,7 @@ async function updateEpisodeExercises(client) {
   // Update all of the documents in the collection that have `BUSHES` in the elements array to now have `BUSH`
   // It should update 120 episodes!
 
-  const result1 = await client
-    .db("databaseWeek3")
-    .collection("bob_ross_episodes")
+  const result1 = await getCollection(client)
     .updateMany({ elements: "BUSHES" }, { $set: { elements: "BUSH" } });
 
   console.log(
@@ -128,9 +119,7 @@ async function deleteEpisodeExercise(client) {
    * This is episode 14 in season 31. Please remove it and verify that it has been removed!
    */
 
-  const result = await client
-    .db("databaseWeek3")
-    .collection("bob_ross_episodes")
+  const result = await getCollection(client)
     .deleteOne({ episode: "S31E14" });
   console.log(
     `Ran a command to delete episode and it deleted ${result.deletedCount} episodes`

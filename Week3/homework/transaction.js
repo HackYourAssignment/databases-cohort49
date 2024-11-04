@@ -1,4 +1,3 @@
-import mysql from "mysql2/promise";
 import { initializeConnection } from "./transactions-insert-values.js";
 
 async function transaction(connection) {
@@ -33,11 +32,12 @@ const main = async () => {
 
   try {
     await transaction(connection);
+  } catch (error) {
+    console.error("Error: ", error.message);
+    console.error(error.stack);
   } finally {
     await connection.end();
   }
 };
 
-main().catch((e) => {
-  console.error(e);
-});
+main();

@@ -1,19 +1,17 @@
 import mysql from "mysql2/promise";
 
 export async function initializeConnection() {
-    const connection = await mysql.createConnection({
-      host: "localhost",
-      user: "hyfuser",
-      password: "hyfpassword",
-      database: "transactions",
-    });
-    return connection;
-  }
-  
+  const connection = await mysql.createConnection({
+    host: "localhost",
+    user: "hyfuser",
+    password: "hyfpassword",
+    database: "transactions",
+  });
+  return connection;
+}
 
 async function insertData(connection) {
   try {
-    
     const accountData = `INSERT IGNORE INTO account (account_number, balance) VALUES
          (1, 1000),
          (2, 700),
@@ -38,14 +36,18 @@ async function insertData(connection) {
     console.log("Error inserting data:", error.message);
     console.log(error.stack);
   }
-};
+}
 
 async function main() {
-    const connection = await initializeConnection(); 
-    await insertData(connection); 
-    await connection.end(); 
-};
+  try {
+    const connection = await initializeConnection();
+    await insertData(connection);
+  } catch (error) {
+    console.error("Error: ", error.message);
+    console.error(error.stack);
+  } finally {
+    await connection.end();
+  }
+}
 
-main().catch(e => {
-    console.error(e)
-});
+main();

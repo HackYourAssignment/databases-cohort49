@@ -19,8 +19,8 @@ Name all the tables and columns that would make a 3NF compliant solution ?
     1.  venue_code PK | venue_description  (Venue)
     2.  food_code  PK | food_description  (Food)
     3.  member_id  PK | member_name | member_address (Member)
-    4.  dinner_id  PK | dinner_date (dinner)
+    4.  dinner_id  PK | dinner_date | venue code FK| (dinner)
     5.  (member_id,  dinner_id ) PK| member_id  FK| dinner_id FK  (member_dinner)
-    6.  (dinner_id,venue_code, food_code) PK | dinner_id FK |venue_code FK |food_code FK| (dinner_venue_food)
+    6.  (dinner_id, food_code) PK | dinner_id FK |food_code FK| (dinner_food)
     
 ```

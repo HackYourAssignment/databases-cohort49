@@ -16,8 +16,8 @@ function getPopulation(Country, name, code, cb) {
 
  #####  Q1. Give an example of a value that can be passed as `name` and `code` that would take advantage of SQL-injection and ( fetch all the records in the database)
 
-1.  name = '' OR '1'='1' 
-2.  code = '' OR '1'='1' 
+1.  name = ' OR '1'='1 
+2.  code = ' OR '1'='1 
 
 
  #####  Q2. Rewrite the function so that it is no longer vulnerable to SQL injection
