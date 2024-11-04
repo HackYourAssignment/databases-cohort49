@@ -2,6 +2,8 @@ const dotenv = require("dotenv").config();
 const { MongoClient, ServerApiVersion } = require("mongodb");
 
 const { seedDatabase } = require("./seedDatabase.js");
+const DATABASE_NAME = "databaseWeek3";
+const COLLECTION_NAME = "bob_ross_episodes";
 
 async function createEpisodeExercise(client) {
   const episode = {
@@ -22,10 +24,7 @@ async function createEpisodeExercise(client) {
     ],
   };
 
-  const result = await client
-    .db("databaseWeek3")
-    .collection("bob_ross_episodes")
-    .insertOne(episode);
+  const result = await getBobRossCollection(client).insertOne(episode);
 
   console.log(
     `Created season 9 episode 13 and the document got the id ${result.insertedId}`
@@ -33,7 +32,7 @@ async function createEpisodeExercise(client) {
 }
 
 async function findEpisodesExercises(client) {
-  const collection = client.db("databaseWeek3").collection("bob_ross_episodes");
+  const collection = getBobRossCollection(client);
 
   const episode2Season2 = await collection.findOne({ episode: "S02E02" });
   console.log(`The title of episode 2 in season 2 is ${episode2Season2.title}`);
@@ -61,7 +60,7 @@ async function findEpisodesExercises(client) {
 }
 
 async function updateEpisodeExercises(client) {
-  const collection = client.db("databaseWeek3").collection("bob_ross_episodes");
+  const collection = getBobRossCollection(client);
 
   const updateTitleResult = await collection.updateOne(
     { episode: "S30E13" },
@@ -81,12 +80,16 @@ async function updateEpisodeExercises(client) {
 }
 
 async function deleteEpisodeExercise(client) {
-  const collection = client.db("databaseWeek3").collection("bob_ross_episodes");
+  const collection = getBobRossCollection(client);
 
   const deleteResult = await collection.deleteOne({ episode: "S31E14" });
   console.log(
     `Ran a command to delete episode and it deleted ${deleteResult.deletedCount} episodes`
   );
+}
+
+function getBobRossCollection(client) {
+  return client.db(DATABASE_NAME).collection(COLLECTION_NAME);
 }
 
 async function main() {

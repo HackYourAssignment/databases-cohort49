@@ -6,6 +6,7 @@ The following columns violate 1NF:
 
 - **food_code** – contains multiple values (e.g., `C1, C2`).
 - **food_description** – also contains multiple values (e.g., `Curry, Cake`).
+- **dinner_date** – inconsistent date formats (e.g., 2020-03-15, 2020/03/15, 20-03-2020, Mar 25 '20), which violates 1NF's requirement for atomic values.
 
 ## 2. What entities do you recognize that could be extracted?
 
@@ -31,6 +32,7 @@ The following columns violate 1NF:
 | ----------- | -------------------------------- |
 | dinner_id   | Unique identifier for the dinner |
 | dinner_date | Date of the dinner               |
+| venue_code  | Code for the venue               |
 
 ### Table `Venues`
 
@@ -55,8 +57,7 @@ The following columns violate 1NF:
 
 ### Table `Dinner_Attendance`
 
-| Column     | Description               |
-| ---------- | ------------------------- |
-| member_id  | Identifier for the member |
-| dinner_id  | Identifier for the dinner |
-| venue_code | Code for the venue        |
+| Column    | Description               |
+| --------- | ------------------------- |
+| member_id | Identifier for the member |
+| dinner_id | Identifier for the dinner |

@@ -13,12 +13,14 @@ function getPopulation(Country, name, code, cb) {
 
 /* 
 
-Parameterized Query: The query uses ?? and ? placeholders for Country, name, and code, respectively.
+Example of SQL Injection Values:
+To exploit the SQL injection vulnerability in the original code, we could pass the following values:
 
-?? is used for the table name, ensuring it is safely included without risk of injection.
-? is used for name and code, which protects them from injection.
+- name: ' OR '1'='1
+- code: ' OR '1'='1'
 
-Secure Parameter Passing: I passed the values [Country, name, code] as an array to the query. 
-This approach ensures that these values are correctly escaped by the MySQL library, preventing SQL injection.
+This will generate a query that returns all records in the table because '1'='1' is always true:
+
+SELECT Population FROM ${Country} WHERE Name = '' OR '1'='1' AND code = '' OR '1'='1'
 
 */
