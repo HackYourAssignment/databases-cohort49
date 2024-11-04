@@ -1,0 +1,31 @@
+Success! 
+
+** transaction result:
+ [
+  {
+    acknowledged: true,
+    modifiedCount: 1,
+    upsertedId: null,
+    upsertedCount: 0,
+    matchedCount: 1
+  },
+  {
+    acknowledged: true,
+    modifiedCount: 1,
+    upsertedId: null,
+    upsertedCount: 0,
+    matchedCount: 1
+  }
+] 
+
+** log result:
+ [
+  {
+    acknowledged: true,
+    insertedId: new ObjectId('6728994a829e57a87a56192c')
+  },
+  {
+    acknowledged: true,
+    insertedId: new ObjectId('6728994a829e57a87a56192b')
+  }
+]
