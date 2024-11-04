@@ -5,7 +5,13 @@ const conn = mysql.createConnection({
   password: "hyfpassword",
 });
 
-conn.connect();
+conn.connect((err) => {
+  if (err) {
+    console.error("Error connecting to the database:", err.stack);
+    return;
+  }
+  console.log("Connected to the database.");
+});
 
 const createTables = `
   CREATE TABLE account (
@@ -23,8 +29,12 @@ const createTables = `
   );
 `;
 
-conn.query(createTables, function (err) {
-  if (err) throw err;
+conn.query(createTables, (err) => {
+  if (err) {
+    console.error("Error creating tables:", err.stack);
+    conn.end();
+    return;
+  }
   console.log("Tables created successfully!");
   conn.end();
 });

@@ -5,18 +5,19 @@ const { seedDatabase } = require("./seedDatabase.js");
 const DATABASE_NAME = "databaseWeek3";
 const COLLECTION_NAME = "bob_ross_episodes";
 
-async function createEpisode(client, episode) {
-  const result = await client
-    .db(DATABASE_NAME)
-    .collection(COLLECTION_NAME)
-    .insertOne(episode);
+function getCollection(client) {
+  return client.db(DATABASE_NAME).collection(COLLECTION_NAME);
+}
+
+async function createEpisode({ client, episode }) {
+  const result = await getCollection(client).insertOne(episode);
   console.log(
     `Created episode "${episode.title}" with ID: ${result.insertedId}`
   );
 }
 
-async function findEpisodes(client) {
-  const collection = client.db(DATABASE_NAME).collection(COLLECTION_NAME);
+async function findEpisodes({ client }) {
+  const collection = getCollection(client);
 
   const episode2Season2 = await collection.findOne({ episode: "S02E02" });
   console.log(`Episode 2 in season 2: ${episode2Season2.title}`);
@@ -39,31 +40,28 @@ async function findEpisodes(client) {
   );
 }
 
-async function updateEpisodeTitle(client, episodeId, newTitle) {
-  const result = await client
-    .db(DATABASE_NAME)
-    .collection(COLLECTION_NAME)
-    .updateOne({ episode: episodeId }, { $set: { title: newTitle } });
+async function updateEpisodeTitle({ client, episodeId, newTitle }) {
+  const result = await getCollection(client).updateOne(
+    { episode: episodeId },
+    { $set: { title: newTitle } }
+  );
   console.log(
     `Updated episode ${episodeId} title to "${newTitle}": ${result.modifiedCount} document(s) modified.`
   );
 }
 
-async function updateBushes(client) {
-  const result = await client
-    .db(DATABASE_NAME)
-    .collection(COLLECTION_NAME)
-    .updateMany({ elements: "BUSHES" }, { $set: { "elements.$": "BUSH" } });
+async function updateBushes({ client }) {
+  const result = await getCollection(client).updateMany(
+    { elements: "BUSHES" },
+    { $set: { "elements.$": "BUSH" } }
+  );
   console.log(
     `Updated all occurrences of BUSHES to BUSH: ${result.modifiedCount} document(s) modified.`
   );
 }
 
-async function deleteEpisode(client, episodeId) {
-  const result = await client
-    .db(DATABASE_NAME)
-    .collection(COLLECTION_NAME)
-    .deleteOne({ episode: episodeId });
+async function deleteEpisode({ client, episodeId }) {
+  const result = await getCollection(client).deleteOne({ episode: episodeId });
   console.log(
     `Deleted episode ${episodeId}: ${result.deletedCount} document(s) deleted.`
   );
@@ -104,11 +102,15 @@ async function main() {
       ],
     };
 
-    await createEpisode(client, newEpisode);
-    await findEpisodes(client);
-    await updateEpisodeTitle(client, "S30E13", "BLUE RIDGE FALLS");
-    await updateBushes(client);
-    await deleteEpisode(client, "S31E14");
+    await createEpisode({ client, episode: newEpisode });
+    await findEpisodes({ client });
+    await updateEpisodeTitle({
+      client,
+      episodeId: "S30E13",
+      newTitle: "BLUE RIDGE FALLS",
+    });
+    await updateBushes({ client });
+    await deleteEpisode({ client, episodeId: "S31E14" });
   } catch (err) {
     console.error("Error during database operations:", err);
   } finally {

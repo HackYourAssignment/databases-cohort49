@@ -7,10 +7,11 @@
 ## 2. Recognizable Entities
 
 1. **Member** (attributes: `member_id`, `member_name`, `member_address`)
-2. **Dinner** (attributes: `dinner_id`, `dinner_date`, `venue_code`)
+2. **Dinner** (attributes: `dinner_id`, `venue_code`)
 3. **Venue** (attributes: `venue_code`, `venue_description`)
 4. **Food** (attributes: `food_code`, `food_description`)
 5. **DinnerFood** (for many-to-many relationship between Dinner and Food)
+6. **MemberDinner** (for many-to-many relationship between Member and Dinner)
 
 ## 3. 3NF-Compliant Tables
 
@@ -24,11 +25,10 @@
 
 ### Dinner Table
 
-| Column      | Type    | Description                 |
-| ----------- | ------- | --------------------------- |
-| dinner_id   | INT     | Primary Key                 |
-| dinner_date | DATE    | Date of the dinner          |
-| venue_code  | VARCHAR | Foreign Key, links to Venue |
+| Column     | Type    | Description                 |
+| ---------- | ------- | --------------------------- |
+| dinner_id  | INT     | Primary Key                 |
+| venue_code | VARCHAR | Foreign Key, links to Venue |
 
 ### Venue Table
 
@@ -50,3 +50,10 @@
 | --------- | ------- | ---------------------------- |
 | dinner_id | INT     | Foreign Key, links to Dinner |
 | food_code | VARCHAR | Foreign Key, links to Food   |
+
+### MemberDinner Table (Associative Table)
+
+| Column    | Type | Description                  |
+| --------- | ---- | ---------------------------- |
+| member_id | INT  | Foreign Key, links to Member |
+| dinner_id | INT  | Foreign Key, links to Dinner |
