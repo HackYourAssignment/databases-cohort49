@@ -4,11 +4,13 @@
 ## 1. Columns that Violate 1NF
 The columns `food_code` and `food_description` violate 1NF, as they contain multiple values separated by commas. To comply with 1NF, each cell must hold a single atomic value.
 
+Additionally, the column `dinner_date` contains dates in different formats (e.g., "2020-03-15", "2020/03/15", "Mar 25 '20"). To normalize this, we can use a consistent date format like `YYYY-MM-DD` for all entries.
+
 ## 2. Recognizable Entities
 From the table, the following entities can be identified:
 
 1. **Members**: Contains member details (`member_id`, `member_name`, `member_address`).
-2. **Dinners**: Stores details about each dinner event (`dinner_id`, `dinner_date`).
+2. **Dinners**: Stores details about each dinner event (`dinner_id`, `dinner_date`, `venue_code`).
 3. **Venues**: Represents venues where dinners are held (`venue_code`, `venue_description`).
 4. **Foods**: Holds information about food items served (`food_code`, `food_description`).
 
@@ -44,12 +46,13 @@ To normalize the table into 3NF, the data is split into separate tables, each re
    ```
 
 4. **Dinners Table**
-   - Holds information on dinner events, including the venue where each dinner is held.
+   - Holds information on dinner events, including the venue where each dinner is held. In this case, we could also include `venue_description` directly if venue details do not change frequently.
    ```sql
    CREATE TABLE Dinners (
        dinner_id VARCHAR(10) PRIMARY KEY,
        dinner_date DATE,
        venue_code VARCHAR(10),
+       venue_description VARCHAR(50),
        FOREIGN KEY (venue_code) REFERENCES Venues(venue_code)
    );
    ```
@@ -81,5 +84,5 @@ To normalize the table into 3NF, the data is split into separate tables, each re
 This normalized structure ensures that:
 - Members and dinner events are linked through the `Members_Dinners` table, allowing each member to participate in multiple dinners.
 - Dinners and foods are connected through the `Dinners_Foods` table, making it possible to serve multiple food items at each dinner.
-
-With this structure, the data is now in 3NF, minimizing redundancy and ensuring data integrity.
+  
+With this structure, the data is now in 3NF, minimizing redundancy, ensuring data integrity, and using a consistent date format (`YYYY-MM-DD`) for `dinner_date`.
