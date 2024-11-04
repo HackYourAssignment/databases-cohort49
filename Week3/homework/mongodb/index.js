@@ -5,8 +5,8 @@ import { seedDatabase } from "./seedDatabase.js";
 import dotenv from "dotenv";
 dotenv.config();
 
-const database = "databaseWeek3";
-const collection = "bob_ross_episodes";
+const DATABASE = "databaseWeek3";
+const COLLECTION = "bob_ross_episodes";
 const getCollection = (client) =>
   client.db(database).collection(collection);
 
