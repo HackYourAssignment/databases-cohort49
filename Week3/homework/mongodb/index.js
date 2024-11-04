@@ -8,7 +8,7 @@ dotenv.config();
 const DATABASE = "databaseWeek3";
 const COLLECTION = "bob_ross_episodes";
 const getCollection = (client) =>
-  client.db(database).collection(collection);
+  client.db(DATABASE).collection(COLLECTION);
 
 
 async function createEpisodeExercise(client) {
@@ -58,9 +58,7 @@ async function findEpisodesExercises(client) {
 
   // Find the season and episode number of the episode called "BLACK RIVER" [Should be: S02E06]
 
-  const result1 = await client
-    .db(database)
-    .collection(collection)
+  const result1 = await getCollection(client)
     .findOne({ title: "BLACK RIVER" });
 
   console.log(
