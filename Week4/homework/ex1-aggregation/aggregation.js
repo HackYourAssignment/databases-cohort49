@@ -1,10 +1,8 @@
 import { MongoClient } from 'mongodb';
 
-if (process.env.MONGODB_URI == null) throw Error(`no uri in .env`);
-
-const client = new MongoClient(process.env.MONGODB_URI);
-
 async function main() {
+  if (process.env.MONGODB_URI == null) throw Error(`no uri in .env`);
+  const client = new MongoClient(process.env.MONGODB_URI);
   await client.connect();
 
   const collection = client

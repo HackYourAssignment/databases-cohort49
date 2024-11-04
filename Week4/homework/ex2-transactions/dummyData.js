@@ -1,6 +1,4 @@
-import getNextChangeNumber from './getNextChangeNumber.js';
-
-export default async function (db) {
+export default function () {
   const accounts2D = [
     [101, 3000.0],
     [102, 2000.0],
@@ -22,25 +20,29 @@ export default async function (db) {
     [105, 500.0, '2020-01-05', 'Deposit'],
   ];
 
-  //convert the arrays of data into arrays of objects in the final required schema
+  //convert accounts data into objects
   const accounts = accounts2D.map(([account_number, balance]) => ({
     account_number,
     balance,
+    account_changes: [],
   }));
 
-  const changes = await Promise.all(
-    changes2D.map(async ([account_number, amount, changed_date, remark]) => {
-      const change_number = await getNextChangeNumber(db);
+  //add changes logs into their accounts
+  changes2D.forEach(([account_number, amount, changed_date, remark]) => {
+    const change_number = 1;
 
-      return {
-        change_number,
-        account_number,
-        amount,
-        changed_date: new Date(changed_date),
-        remark,
-      };
-    }),
-  );
+    const log = {
+      change_number,
+      account_number,
+      amount,
+      changed_date: new Date(changed_date),
+      remark,
+    };
 
-  return [accounts, changes];
+    accounts
+      .find((account) => account.account_number === account_number)
+      .account_changes.push(log);
+  });
+
+  return accounts;
 }
