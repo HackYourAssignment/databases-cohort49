@@ -1,0 +1,63 @@
+Success! 
+
+** Result:
+ [
+  {
+    acknowledged: true,
+    modifiedCount: 1,
+    upsertedId: null,
+    upsertedCount: 0,
+    matchedCount: 1
+  },
+  {
+    acknowledged: true,
+    modifiedCount: 1,
+    upsertedId: null,
+    upsertedCount: 0,
+    matchedCount: 1
+  }
+]
+[
+  {
+    "_id": "6728ec71c748cebad1117f25",
+    "account_number": 101,
+    "balance": 2740,
+    "account_changes": [
+      {
+        "change_number": 1,
+        "account_number": 101,
+        "amount": 100,
+        "changed_date": "2020-01-01T00:00:00.000Z",
+        "remark": "Deposit"
+      },
+      {
+        "change_number": 2,
+        "account_number": 101,
+        "amount": -260,
+        "changed_date": "2024-11-04T15:46:58.163Z",
+        "remark": "transfer to account 102"
+      }
+    ]
+  },
+  {
+    "_id": "6728ec71c748cebad1117f26",
+    "account_number": 102,
+    "balance": 2260,
+    "account_changes": [
+      {
+        "change_number": 1,
+        "account_number": 102,
+        "amount": 200,
+        "changed_date": "2020-01-02T00:00:00.000Z",
+        "remark": "Withdraw"
+      },
+      {
+        "change_number": 2,
+        "account_number": 102,
+        "amount": 260,
+        "changed_date": "2024-11-04T15:46:58.232Z",
+        "remark": "transfer from account 101"
+      }
+    ]
+  }
+]

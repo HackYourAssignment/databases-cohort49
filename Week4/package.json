@@ -1,0 +1,17 @@
+{
+  "name": "week4",
+  "version": "1.0.0",
+  "description": "These are the topics for week 4, all in MongoDB:",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "aggregates": " node --env-file=.env ./homework/ex1-aggregation/aggregation.js > ./homework/ex1-aggregation/log.txt 2>&1",
+    "transfer": " node --env-file=.env ./homework/ex2-transactions/transfer.js > ./homework/ex2-transactions/log.txt 2>&1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mongodb": "^6.10.0"
+  }
+}

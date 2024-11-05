@@ -1,0 +1,69 @@
+[
+  [
+    { _id: 1950, countPopulation: 10042051 },
+    { _id: 1960, countPopulation: 11448815 },
+    { _id: 1970, countPopulation: 13001941 },
+    { _id: 1980, countPopulation: 14148410 },
+    { _id: 1990, countPopulation: 14965442 },
+    { _id: 2000, countPopulation: 15926188 },
+    { _id: 2010, countPopulation: 16682925 },
+    { _id: 2020, countPopulation: 17134872 },
+    { _id: 2022, countPopulation: 17211448 }
+  ],
+  [
+    {
+      _id: new ObjectId('6727efac95e737a958badd58'),
+      Country: 'AFRICA',
+      Year: 2020,
+      Age: '100+',
+      M: 1327,
+      F: 2723,
+      TotalPopulation: 4050
+    },
+    {
+      _id: new ObjectId('6727efac95e737a958bade00'),
+      Country: 'ASIA',
+      Year: 2020,
+      Age: '100+',
+      M: 57019,
+      F: 207883,
+      TotalPopulation: 264902
+    },
+    {
+      _id: new ObjectId('6727efad95e737a958bae301'),
+      Country: 'EUROPE',
+      Year: 2020,
+      Age: '100+',
+      M: 22579,
+      F: 102056,
+      TotalPopulation: 124635
+    },
+    {
+      _id: new ObjectId('6727efad95e737a958bae634'),
+      Country: 'LATIN AMERICA AND THE CARIBBEAN',
+      Year: 2020,
+      Age: '100+',
+      M: 19858,
+      F: 49218,
+      TotalPopulation: 69076
+    },
+    {
+      _id: new ObjectId('6727efad95e737a958bae9a6'),
+      Country: 'NORTHERN AMERICA',
+      Year: 2020,
+      Age: '100+',
+      M: 22267,
+      F: 83419,
+      TotalPopulation: 105686
+    },
+    {
+      _id: new ObjectId('6727efad95e737a958bae9e5'),
+      Country: 'OCEANIA',
+      Year: 2020,
+      Age: '100+',
+      M: 1094,
+      F: 3980,
+      TotalPopulation: 5074
+    }
+  ]
+]
