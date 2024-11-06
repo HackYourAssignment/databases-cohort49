@@ -1,16 +1,20 @@
-import mongoose from "mongoose";
-const { Schema } = mongoose;
+const { MongoClient } = require("mongodb");
+require("dotenv").config();
 
-const episodeSchema = new Schema({
-  _id: {
-    type: Schema.Types.ObjectId,
-    default: () => new mongoose.Types.ObjectId(),
-  },
-  title: String,
-  season: Number,
-  episode: Number,
-  elements: [String],
+const uri = process.env.MONGODB_URI;
+const dbName = "databaseWeek3";
+const collectionName = "bob_ross_episodes";
+
+const client = new MongoClient(uri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
 });
 
-const BobRossEpisode = mongoose.model("BobRossEpisode", episodeSchema);
-export default BobRossEpisode;
+async function connectToDB() {
+  await client.connect();
+  console.log("Connected to MongoDB");
+  const collection = client.db(dbName).collection(collectionName);
+  return { client, collection };
+}
+
+module.exports = { connectToDB };
