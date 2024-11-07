@@ -1,16 +1,14 @@
-import connection from './dbconnection.js';
+import createConnection from './dbconnection.js';
 
 async function createTables() {
-  try {
-    await connection.execute(`
+  const createAccountTable = `
       CREATE TABLE IF NOT EXISTS accounts (
       account_number INT PRIMARY KEY,
-      balance DECIMAL(10, 2) NOT NULL,
+      balance DECIMAL(10, 2) NOT NULL
     );
-    `);
-    console.log('accounts table created successfully');
+    `;
 
-    await connection.execute(`
+  const createAccountChangeTable = `
       CREATE TABLE IF NOT EXISTS accounts_change (
 
       change_number INT AUTO_INCREMENT PRIMARY KEY,
@@ -19,7 +17,12 @@ async function createTables() {
       remark VARCHAR(255) NOT NULL,
       FOREIGN KEY (account_number) REFERENCES accounts(account_number)
     );
-  `);
+  `;
+  const connection = await createConnection();
+  try {
+    await connection.execute(createAccountTable);
+    console.log('accounts table created successfully');
+    await connection.execute(createAccountChangeTable);
     console.log('accounts_change table created successfully');
   } catch (error) {
     console.error('Error creating tables:', error);

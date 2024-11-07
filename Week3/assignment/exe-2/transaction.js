@@ -1,8 +1,7 @@
-import mysql from 'mysql';
-import connection from './dbconnection.js';
+import createConnection from './dbconnection.js';
 
 async function transferAmount() {
-  const connectionData = await mysql.createConnection(connection);
+  const connectionData = await createConnection();
   try {
     await connectionData.beginTransaction();
     await connectionData.execute(`

@@ -19,11 +19,6 @@ async function createEpisodeExercise(client) {
 }
 
 async function findEpisodesExercises(client) {
-  /**
-   * Complete the following exercises.
-   * The comments indicate what to do and what the result should be!
-   */
-
   // Find the title of episode 2 in season 2 [Should be: WINTER SUN]
   const episode2 = await client
     .db('databaseWeek3')
@@ -69,14 +64,6 @@ async function findEpisodesExercises(client) {
 }
 
 async function updateEpisodeExercises(client) {
-  /**
-   * There are some problems in the initial data that was filled in.
-   * Let's use update functions to update this information.
-   *
-   * Note: do NOT change the data.json file
-   */
-
-  // Episode 13 in season 30 should be called BLUE RIDGE FALLS, yet it is called BLUE RIDGE FALLERS now. Fix that
   const updateResult1 = await client
     .db('databaseWeek3')
     .collection('bob_ross_episodes')
@@ -85,16 +72,13 @@ async function updateEpisodeExercises(client) {
       { $set: { title: 'BLUE RIDGE FALLS' } },
     );
   console.log(
-    `Ran a command to update episode 13 in season 30 and it updated ${updateEpisodeExercises.modifiedCount} episodes`,
+    `Ran a command to update episode 13 in season 30 and it updated ${updateResult1.modifiedCount} episodes`,
   );
 
-  // Unfortunately we made a mistake in the arrays and the element type called 'BUSHES' should actually be 'BUSH' as sometimes only one bush was painted.
-  // Update all of the documents in the collection that have `BUSHES` in the elements array to now have `BUSH`
-  // It should update 120 episodes!
   const updateResult2 = await client
     .db('databaseWeek3')
     .collection('bob_ross_episodes')
-    .updateMany({ elements: 'BUSHES' }, { $set: { elements: 'BUSH' } });
+    .updateMany({ elements: 'BUSHES' }, { $set: { 'elements.$': 'BUSH' } });
 
   console.log(
     `Ran a command to update all the BUSHES to BUSH and it updated ${updateResult2.modifiedCount} episodes`,
@@ -102,22 +86,18 @@ async function updateEpisodeExercises(client) {
 }
 
 async function deleteEpisodeExercise(client) {
-  /**
-   * It seems an errand episode has gotten into our data.
-   * This is episode 14 in season 31. Please remove it and verify that it has been removed!
-   */
   const deleteResult = await client
     .db('databaseWeek3')
     .collection('bob_ross_episodes')
     .deleteOne({ season: 31, episode: 14 });
 
   console.log(
-    `Ran a command to delete episode and it deleted ${deleteEpisodeExercise.deletedCount} episodes`,
+    `Ran a command to delete episode and it deleted ${deleteResult.deletedCount} episodes`,
   );
 }
 
 async function main() {
-  if (process.env.MONGODB_URL == null) {
+  if (!process.env.MONGODB_URL) {
     throw Error(
       `You did not set up the environment variables correctly. Did you create a '.env' file and add a package to create it?`,
     );
@@ -154,17 +134,3 @@ async function main() {
 }
 
 main();
-
-/**
- * In the end the console should read something like this: 
-
-Created season 9 episode 13 and the document got the id 625e9addd11e82a59aa9ff93
-The title of episode 2 in season 2 is WINTER SUN
-The season and episode number of the "BLACK RIVER" episode is S02E06
-The episodes that Bob Ross painted a CLIFF are NIGHT LIGHT, EVENING SEASCAPE, SURF'S UP, CLIFFSIDE, BY THE SEA, DEEP WILDERNESS HOME, CRIMSON TIDE, GRACEFUL WATERFALL
-The episodes that Bob Ross painted a CLIFF and a LIGHTHOUSE are NIGHT LIGHT
-Ran a command to update episode 13 in season 30 and it updated 1 episodes
-Ran a command to update all the BUSHES to BUSH and it updated 120 episodes
-Ran a command to delete episode and it deleted 1 episodes
- 
-*/

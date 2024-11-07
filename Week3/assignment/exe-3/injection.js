@@ -1,6 +1,7 @@
-const connection = require('../exe-2/dbconnection.js');
+import createConnection from '../exe-2/dbconnection.js';
 
 async function getPopulation(country, name, code) {
+  const connection = await createConnection();
   try {
     const [rows] = await connection.execute(
       `SELECT Population FROM ?? WHERE Name = ? AND Code = ?`,
