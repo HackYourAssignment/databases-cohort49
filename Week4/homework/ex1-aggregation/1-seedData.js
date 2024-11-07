@@ -14,9 +14,17 @@ const createDataArray = async () => {
   return new Promise((resolve, reject) => {
     fs.createReadStream(csvFileName)
       .pipe(csv())
-      .on("data", (data) => results.push(data))
+      .on("data", (data) =>
+        results.push({
+          Country: data.Country,
+          Year: parseInt(data.Year),
+          Age: data.Age,
+          M: parseInt(data.M),
+          F: parseInt(data.F),
+        })
+      )
       .on("end", () => {
-        console.log("CSV file was successfully read!");
+        console.log("Data imported successfully!");
         resolve(results);
       });
   });
@@ -37,4 +45,4 @@ const seedData = async () => {
 };
 
 const results = await createDataArray();
-// await seedData(results);
+await seedData(results);

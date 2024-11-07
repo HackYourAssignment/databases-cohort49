@@ -5,45 +5,23 @@ const main = async (country) => {
     const db = await connectToDatabase();
     const collection = db.collection("population");
 
-    const aggCursor = await collection.aggregate(
-      [
-        { $match: { Country: country } },
-        {
-          $addFields: {
-            combinedPopulation: {
-              $add: [
-                {
-                  $convert: {
-                    input: "$F",
-                    to: "int",
-                    onError: 0,
-                    onNull: 0,
-                  },
-                },
-                {
-                  $convert: {
-                    input: "$M",
-                    to: "int",
-                    onError: 0,
-                    onNull: 0,
-                  },
-                },
-              ],
-            },
+    const aggCursor = await collection.aggregate([
+      { $match: { Country: "Netherlands" } },
+      {
+        $addFields: {
+          combinedPopulation: { $add: ["$M", "$F"] },
+        },
+      },
+      {
+        $group: {
+          _id: "$Year",
+          countPopulation: {
+            $sum: "$combinedPopulation",
           },
         },
-        {
-          $group: {
-            _id: "$Year",
-            countPopulation: {
-              $sum: "$combinedPopulation",
-            },
-          },
-        },
-        { $sort: { _id: 1 } },
-      ],
-      { maxTimeMS: 60000, allowDiskUse: true }
-    );
+      },
+      { $sort: { _id: 1 } },
+    ]);
 
     await aggCursor.forEach((element) => {
       console.log(element);
