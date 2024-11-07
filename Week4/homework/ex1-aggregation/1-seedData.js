@@ -30,7 +30,7 @@ const createDataArray = async () => {
   });
 };
 
-const seedData = async () => {
+const seedData = async (results) => {
   try {
     const db = await connectToDatabase();
     const collection = db.collection("population");
