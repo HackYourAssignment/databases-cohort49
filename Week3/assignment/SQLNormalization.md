@@ -4,16 +4,19 @@
 
 The following columns break 1NF rules because they contain multiple values in one cell:
 
-    **food_code** – has entries like C1, C2, which list multiple codes.
-    food_description – has entries like Curry, Cake, which list multiple food items.
+    **food_code** – it has entries like "C1, C2" which list several food codes in one cell.
+    **food_description** – it has entries like "Curry, Cake," listing multiple food items in one cell.
+
+    Also, the dinner_date column has inconsistent date formats, like 2020-03-15, 2020/03/15, 20-03-2020, and Mar 25 '20. To meet 1NF, all dates should use a single, consistent format, such as YYYY-MM-DD.
 
 ## 2. What entities do you recognize that could be extracted?
 
-  **Members:** This table would store information about each member who attends dinners, such as their ID, name, and address.
-  **Dinners**: This table would include details about each dinner event, like the dinner’s unique ID and date.
-  **Venues**: This table would list information about each venue where a dinner is held, with a code and a description of the venue.
-  **Foods**: This table would store details about each type of food served, including a code and a description for each item.  **Dinner_Food:** Since each dinner can have multiple foods, this table connects dinners to the foods served at each.
-  **Dinner_Attendance**: Because each dinner can have multiple members attending, this table links members to the dinners they attended.
+  **Members:** A table with details about each member attending dinners, including member_id (ID number), member_name (name), and member_address (address).
+  **Dinners**: A table that records each dinner event, with columns like dinner_id (ID number) and dinner_date (date of the dinner).
+  **Venues**: A table for each venue where dinners are held, with venue_code (venue ID) and venue_description (venue name or description).
+  **Foods**: A table listing each type of food served, with food_code (food ID) and food_description (description of the food). 
+  **Dinner_Food:** A table connecting dinners with the foods served at them, since a dinner can have multiple foods.
+  **Dinner_Attendance**: A table showing which members attended which dinners, since a dinner can have multiple members attending.
 
 ## Name all the tables and columns that would make a 3NF compliant solution
 
@@ -29,6 +32,7 @@ member_address |    Address of the member
 Column          |    Description
 dinner_id       |    Unique ID for each dinner
 dinner_date     |    Date of the dinner event
+venue_code      |    Code for the venue
 
 ### Venues Table
 
@@ -53,4 +57,4 @@ food_code            |     Code for the food item
 Column               |     Description
 member_id            |     ID for the member
 dinner_id            |     ID for the dinner
-venue_code           |     Code for the venue
+
