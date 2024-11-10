@@ -22,7 +22,7 @@ async function getPopulationByContinentYearAndAge(year, ageGroup) {
     return await db
         .collection("populationData")
         .aggregate([
-            { $match: { Year: year, Age: ageGroup } },
+            { $match: { Year: year, Age: ageGroup, Country: { $in: ["AFRICA", "OCEANIA", "EUROPE", "ASIA", "AMERICAS"] } } },
             {
                 $project: {
                     Country: 1,
