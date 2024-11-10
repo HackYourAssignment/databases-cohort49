@@ -9,8 +9,8 @@ async function transferMoney(fromAccountNumber, toAccountNumber, amount, remark)
     session.startTransaction();
 
     try {
-        const fromAccount = await accounts.findOne({ account_number: fromAccountNumber });
-        const toAccount = await accounts.findOne({ account_number: toAccountNumber });
+        const fromAccount = await accounts.findOne({ account_number: fromAccountNumber }, { session });
+        const toAccount = await accounts.findOne({ account_number: toAccountNumber }, { session });
 
         if (!fromAccount || !toAccount) throw new Error("One or both accounts not found.");
         if (fromAccount.balance < amount) throw new Error("Insufficient funds.");
