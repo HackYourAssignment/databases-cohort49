@@ -1,3 +1,4 @@
+
 import {  DATABASE_NAME, COLLECTION_NAME, CLIENT } from "./setup.js";
 
 export const transfer = async (from, to, amount, remark) => {
@@ -22,14 +23,14 @@ export const transfer = async (from, to, amount, remark) => {
         const toBalance = toAccount.balance + amount;
 
         const fromChange = {
-            change_number: fromAccount.account_changes.length + 1,
+            change_number: await getMaxChangeNumber(from, collection) + 1,
             amount: -amount,
             changed_date: new Date(),
             remark: remark,
         };
 
         const toChange = {
-            change_number: toAccount.account_changes.length + 1,
+            change_number: await getMaxChangeNumber(to, collection) + 1,
             amount: amount,
             changed_date: new Date(),
             remark: remark,
@@ -38,7 +39,7 @@ export const transfer = async (from, to, amount, remark) => {
         await collection.updateOne(
             { account_number: from },
             {
-                $set: { balance: fromBalance },
+                $inc: { balance: fromBalance },
                 $push: { account_changes: fromChange },
             },
             { session }
@@ -47,7 +48,7 @@ export const transfer = async (from, to, amount, remark) => {
         await collection.updateOne(
             { account_number: to },
             {
-                $set: { balance: toBalance },
+                $inc: { balance: toBalance },
                 $push: { account_changes: toChange },
             },
             { session }
@@ -67,4 +68,13 @@ export const transfer = async (from, to, amount, remark) => {
         }
         await CLIENT.close();
     }
+};
+
+const getMaxChangeNumber = async (accountNumber, collection) => {
+    const result = await collection.aggregate([
+        { $match: { account_number: accountNumber } },
+        { $unwind: "$account_changes" },
+        { $group: { _id: null, maxChangeNumber: { $max: "$account_changes.change_number" } } }
+    ]).toArray();
+    return result.length ? result[0].maxChangeNumber : 0;
 };
