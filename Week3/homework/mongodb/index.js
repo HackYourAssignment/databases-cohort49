@@ -67,10 +67,7 @@ async function updateEpisodeExercises(client) {
   const updateResult1 = await client
     .db('databaseWeek3')
     .collection('bob_ross_episodes')
-    .updateOne(
-      { season: 30, episode: 13 },
-      { $set: { title: 'BLUE RIDGE FALLS' } },
-    );
+    .updateOne({ episode: 'S30E13' }, { $set: { title: 'BLUE RIDGE FALLS' } });
   console.log(
     `Ran a command to update episode 13 in season 30 and it updated ${updateResult1.modifiedCount} episodes`,
   );
@@ -89,7 +86,7 @@ async function deleteEpisodeExercise(client) {
   const deleteResult = await client
     .db('databaseWeek3')
     .collection('bob_ross_episodes')
-    .deleteOne({ season: 31, episode: 14 });
+    .deleteOne({ episode: 'S31E14' });
 
   console.log(
     `Ran a command to delete episode and it deleted ${deleteResult.deletedCount} episodes`,
