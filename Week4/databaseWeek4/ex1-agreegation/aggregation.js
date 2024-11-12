@@ -3,7 +3,7 @@ const { MongoClient } = require('mongodb');
 
 async function getTotalPopulationByCountry(country) {
     const uri = process.env.MONGODB_URI;
-    const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+    const client = new MongoClient(uri);
 
     try {
         await client.connect();
@@ -24,7 +24,7 @@ async function getTotalPopulationByCountry(country) {
 
 async function getPopulationByYearAndAge(year, age) {
     const uri = process.env.MONGODB_URI;
-    const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+    const client = new MongoClient(uri);
 
     try {
         await client.connect();

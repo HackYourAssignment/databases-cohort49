@@ -3,12 +3,13 @@ const { MongoClient } = require('mongodb');
 
 async function transfer(fromAccount, toAccount, amount, remark) {
     const uri = process.env.MONGODB_URI;
-    const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+    const client = new MongoClient(uri);
+
+    // Move client.connect() and session definition outside of try block
+    await client.connect();
+    const session = client.startSession();
 
     try {
-        await client.connect();
-        const session = client.startSession();
-
         session.startTransaction();
 
         const collection = client.db("databaseWeek4").collection("accounts");
@@ -54,6 +55,7 @@ async function transfer(fromAccount, toAccount, amount, remark) {
         await session.abortTransaction();
         console.error("Transaction failed:", error);
     } finally {
+        // Ensure session and client are properly closed
         session.endSession();
         await client.close();
     }

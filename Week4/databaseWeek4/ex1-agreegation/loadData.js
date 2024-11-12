@@ -1,15 +1,12 @@
 require('dotenv').config();
 const fs = require('fs');
 const csv = require('csv-parser');
-const { MongoClient } = require('mongodb');
+const { connectToDatabase, closeDatabase } = require('./db');
 
 async function loadCSVData() {
-    const uri = process.env.MONGODB_URI;
-    const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-
     try {
-        await client.connect();
-        const collection = client.db("databaseWeek4").collection("populationData");
+        const db = await connectToDatabase();
+        const collection = db.collection("populationData");
 
         // Clear existing data for a fresh start
         await collection.deleteMany({});
@@ -27,12 +24,13 @@ async function loadCSVData() {
                 };
                 await collection.insertOne(document);
             })
-            .on('end', () => {
+            .on('end', async () => {
                 console.log('CSV data successfully loaded to MongoDB');
-                client.close();
+                await closeDatabase();
             });
     } catch (error) {
-        console.error("Error:", error);
+        console.error("Error connecting:", error);
+        await closeDatabase();
     }
 }
 
