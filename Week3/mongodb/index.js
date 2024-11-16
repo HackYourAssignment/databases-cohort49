@@ -1,6 +1,6 @@
 import { MongoClient } from "mongodb";
 import dotenv from "dotenv";
-dotenv.config(); // Load environment variables from .env file
+dotenv.config();
 
 const { MONGO_URI } = process.env;
 
@@ -9,29 +9,21 @@ const client = new MongoClient(MONGO_URI, {
   useUnifiedTopology: true,
 });
 
-async function main() {
+const dbName = "databaseWeek3";
+const collectionName = "bob_ross_episodes";
+const connectToDatabase = async () => {
   try {
-    // Connect to the database
     await client.connect();
     console.log("Connected to MongoDB");
-
-    const db = client.db("databaseWeek3");
-    const collection = db.collection("bob_ross_episodes");
-
-    // Perform CRUD operations here...
-    await createEpisode(collection);
-    await readEpisode(collection);
-    await updateEpisode(collection);
-    await deleteEpisode(collection);
+    const db = client.db(dbName);
+    const collection = db.collection(collectionName);
+    return collection;
   } catch (error) {
-    console.error("Error:", error);
-  } finally {
-    // Close the connection to the database
-    await client.close();
+    console.error("Failed to connect to MongoDB:", error);
+    throw error;
   }
-}
+};
 
-// CREATE: Insert a new episode
 const createEpisode = async (collection) => {
   const newEpisode = {
     title: "Mountain Lake",
@@ -48,42 +40,68 @@ const createEpisode = async (collection) => {
   }
 };
 
-// READ: Find an episode by title
 const readEpisode = async (collection) => {
   try {
     const episode = await collection.findOne({ title: "Mountain Lake" });
-    console.log("Found episode:", episode);
+    if (episode) {
+      console.log("Found episode:", episode);
+    } else {
+      console.log("Episode not found.");
+    }
   } catch (error) {
     console.error("Error reading episode:", error);
   }
 };
 
-// UPDATE: Update the title of an episode
 const updateEpisode = async (collection) => {
   try {
     const updateResult = await collection.updateOne(
       { title: "Mountain Lake" },
       { $set: { title: "Mountain Lake (Updated)" } }
     );
-    console.log(
-      `Matched ${updateResult.matchedCount} document(s), modified ${updateResult.modifiedCount} document(s)`
-    );
+    if (updateResult.matchedCount > 0) {
+      console.log(
+        `Matched ${updateResult.matchedCount} document(s), modified ${updateResult.modifiedCount} document(s)`
+      );
+    } else {
+      console.log("No episode found to update.");
+    }
   } catch (error) {
     console.error("Error updating episode:", error);
   }
 };
 
-// DELETE: Delete an episode by title
 const deleteEpisode = async (collection) => {
   try {
     const deleteResult = await collection.deleteOne({
       title: "Mountain Lake (Updated)",
     });
-    console.log(`Deleted ${deleteResult.deletedCount} episode(s)`);
+    if (deleteResult.deletedCount > 0) {
+      console.log(`Deleted ${deleteResult.deletedCount} episode(s)`);
+    } else {
+      console.log("No episode found to delete.");
+    }
   } catch (error) {
     console.error("Error deleting episode:", error);
   }
 };
 
-// Execute the main function
+async function main() {
+  let collection;
+
+  try {
+    collection = await connectToDatabase();
+
+    await createEpisode(collection);
+    await readEpisode(collection);
+    await updateEpisode(collection);
+    await deleteEpisode(collection);
+  } catch (error) {
+    console.error("Error during CRUD operations:", error);
+  } finally {
+    await client.close();
+    console.log("Disconnected from MongoDB.");
+  }
+}
+
 main();

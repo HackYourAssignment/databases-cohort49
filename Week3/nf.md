@@ -1,6 +1,5 @@
-1. Columns Violating 1NF
-food_code: Contains multiple values (e.g., C1, C2).
-food_description: Contains multiple values (e.g., Curry, Cake).
+1.Columns Violating 1NF
+The food_code and food_description columns contain multiple values in a single row (e.g., C1, C2 for food_code and Curry, Cake for food_description), violating 1NF by not having atomic values.
 2. Recognized Entities
 Member: Represents club members.
 Dinner: Represents dinners attended by members.
