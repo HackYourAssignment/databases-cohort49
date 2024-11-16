@@ -8,7 +8,6 @@ const client = new MongoClient(MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
-
 const transferMoney = async (fromAccount, toAccount, amount, remark) => {
   const session = client.startSession();
 
@@ -17,8 +16,8 @@ const transferMoney = async (fromAccount, toAccount, amount, remark) => {
 
     const db = client.db("bank");
     const accountsCollection = db.collection("accounts");
+    const counterCollection = db.collection("counters");
 
-    // Get accounts from the database
     const fromAccountDoc = await accountsCollection.findOne({
       account_number: fromAccount,
     });
@@ -34,14 +33,21 @@ const transferMoney = async (fromAccount, toAccount, amount, remark) => {
       throw new Error("Insufficient funds");
     }
 
-    // Update balances
+    const changeNumberDoc = await counterCollection.findOneAndUpdate(
+      { _id: "changeNumber" },
+      { $inc: { seq: 1 } },
+      { upsert: true, returnDocument: "after", session }
+    );
+
+    const changeNumber = changeNumberDoc.value.seq;
+
     await accountsCollection.updateOne(
       { account_number: fromAccount },
       {
         $inc: { balance: -amount },
         $push: {
           account_changes: {
-            change_number: Date.now(),
+            change_number: changeNumber,
             amount: -amount,
             changed_date: new Date(),
             remark,
@@ -57,7 +63,7 @@ const transferMoney = async (fromAccount, toAccount, amount, remark) => {
         $inc: { balance: amount },
         $push: {
           account_changes: {
-            change_number: Date.now(),
+            change_number: changeNumber,
             amount,
             changed_date: new Date(),
             remark,
@@ -78,5 +84,4 @@ const transferMoney = async (fromAccount, toAccount, amount, remark) => {
   }
 };
 
-// Example usage:
 transferMoney(101, 102, 1000, "Transfer for groceries");

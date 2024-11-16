@@ -27,22 +27,33 @@ const getTotalPopulationByContinent = async (year, age) => {
           },
         },
         {
-          $lookup: {
-            from: "continents",
-            localField: "_id",
-            foreignField: "Country",
-            as: "continent_info",
+          $group: {
+            _id: {
+              $cond: {
+                if: {
+                  $in: [
+                    "$_id",
+                    ["AFRICA", "OCEANIA", "ASIA", "EUROPE", "AMERICAS"],
+                  ],
+                },
+                then: "$_id",
+                else: "Other",
+              },
+            },
+            TotalPopulation: { $sum: "$TotalPopulation" },
+            M: { $sum: "$M" },
+            F: { $sum: "$F" },
           },
         },
         {
           $project: {
             _id: 0,
-            Country: { $arrayElemAt: ["$continent_info.Country", 0] },
+            Continent: "$_id",
             Year: year,
             Age: age,
+            TotalPopulation: 1,
             M: 1,
             F: 1,
-            TotalPopulation: 1,
           },
         },
       ])
@@ -56,5 +67,4 @@ const getTotalPopulationByContinent = async (year, age) => {
   }
 };
 
-// Example usage:
 getTotalPopulationByContinent(2020, "100+");
