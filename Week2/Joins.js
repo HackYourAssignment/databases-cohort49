@@ -18,7 +18,6 @@ async function main() {
   });
 
   try {
-    // 1. Query to get all authors and their corresponding mentors
     const authorsWithMentorsQuery = `
       SELECT a.author_name AS Author, m.author_name AS Mentor
       FROM authors a
@@ -49,5 +48,5 @@ async function main() {
   }
 }
 
-// Run the main function
+// Run the main function`````````````
 main();

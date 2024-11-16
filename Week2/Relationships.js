@@ -31,14 +31,25 @@ async function createResearchPapersTable(connection) {
       paper_id INT AUTO_INCREMENT PRIMARY KEY,
       paper_title VARCHAR(255) NOT NULL,
       conference VARCHAR(255),
-      publish_date DATE,
-      author_id INT,
-      PRIMARY KEY (paper_id, author_id),
-      FOREIGN KEY (author_id) REFERENCES authors(author_id)
+      publish_date DATE
     );
   `;
   await executeQuery(connection, createTableQuery);
   console.log("Research papers table created.");
+}
+
+async function createResearchPaperAuthorsTable(connection) {
+  const createTableQuery = `
+    CREATE TABLE IF NOT EXISTS research_paper_authors (
+      paper_id INT,
+      author_id INT,
+      PRIMARY KEY (paper_id, author_id),
+      FOREIGN KEY (paper_id) REFERENCES research_papers(paper_id) ON DELETE CASCADE,
+      FOREIGN KEY (author_id) REFERENCES authors(author_id) ON DELETE CASCADE
+    );
+  `;
+  await executeQuery(connection, createTableQuery);
+  console.log("Research paper authors table created.");
 }
 
 async function insertSampleData(connection) {
@@ -70,21 +81,32 @@ async function insertSampleData(connection) {
   // Insert research papers
   const papers = [];
   for (let i = 1; i <= 30; i++) {
-    const authorId = Math.floor(Math.random() * 15) + 1; // Random author_id between 1 and 15
-    papers.push([
-      `Research Paper ${i}`,
-      `Conference ${i}`,
-      `2023-01-${i}`,
-      authorId,
-    ]);
+    papers.push([`Research Paper ${i}`, `Conference ${i}`, `2023-01-${i}`]);
   }
 
   const insertPapersQuery = `
-    INSERT INTO research_papers (paper_title, conference, publish_date, author_id)
+    INSERT INTO research_papers (paper_title, conference, publish_date)
     VALUES ?;
   `;
 
   await connection.query(insertPapersQuery, [papers]);
+
+  // Insert into research_paper_authors table
+  const paperAuthors = [];
+  for (let i = 1; i <= 30; i++) {
+    const numAuthors = Math.floor(Math.random() * 3) + 1; // Random number of authors per paper (1 to 3)
+    for (let j = 0; j < numAuthors; j++) {
+      const authorId = Math.floor(Math.random() * 15) + 1; // Random author_id between 1 and 15
+      paperAuthors.push([i, authorId]);
+    }
+  }
+
+  const insertPaperAuthorsQuery = `
+    INSERT INTO research_paper_authors (paper_id, author_id)
+    VALUES ?;
+  `;
+  await connection.query(insertPaperAuthorsQuery, [paperAuthors]);
+
   console.log("Sample data inserted.");
 }
 
@@ -99,6 +121,7 @@ async function main() {
   try {
     await createAuthorsTable(connection);
     await createResearchPapersTable(connection);
+    await createResearchPaperAuthorsTable(connection);
     await insertSampleData(connection);
   } finally {
     await connection.end();
@@ -106,5 +129,4 @@ async function main() {
   }
 }
 
-// Run the main function
 main();
