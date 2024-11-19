@@ -8,8 +8,18 @@ const getTotalPopulationByContinent = async (year, age) => {
     const aggCursor = await collection.aggregate([
       {
         $match: {
-          Year: year,
-          Age: age,
+          country: {
+            $in: [
+              'AFRICA',
+              'ASIA',
+              'EUROPE',
+              'LATIN AMERICA AND THE CARIBBEAN',
+              'NORTHERN AMERICA',
+              'OCEANIA',
+            ],
+          },
+          year: year,
+          age: age,
         },
       },
       {

@@ -22,7 +22,6 @@ const getTotalPopulationPerYear = async (country) => {
     ]);
     const result = await aggCursor.toArray();
 
-    console.log(result);
     return result;
   } catch (error) {
     console.error('Error:', error);
