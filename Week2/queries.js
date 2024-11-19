@@ -33,9 +33,10 @@ async function main() {
 
     // 2. Authors and their published papers
     const authorsWithPapersQuery = `
-      SELECT a.*, p.paper_title
+      SELECT a.author_name, p.paper_title
       FROM authors a
-      LEFT JOIN research_papers p ON a.author_id = p.author_id;
+      LEFT JOIN author_papers ap ON a.author_id = ap.author_id
+      LEFT JOIN research_papers p ON ap.paper_id = p.paper_id;
     `;
     const authorsWithPapers = await executeQuery(
       connection,
@@ -46,9 +47,9 @@ async function main() {
 
     // 3. All research papers and the number of authors that wrote that paper
     const papersWithAuthorCountQuery = `
-      SELECT p.paper_title, COUNT(a.author_id) AS AuthorCount
+      SELECT p.paper_title, COUNT(ap.author_id) AS AuthorCount
       FROM research_papers p
-      LEFT JOIN authors a ON p.author_id = a.author_id
+      LEFT JOIN author_papers ap ON p.paper_id = ap.paper_id
       GROUP BY p.paper_id;
     `;
     const papersWithAuthorCount = await executeQuery(
@@ -61,8 +62,9 @@ async function main() {
     // 4. Sum of the research papers published by all female authors
     const femaleAuthorsPapersCountQuery = `
       SELECT COUNT(*) AS FemaleAuthorsPapers
-      FROM research_papers p
-      JOIN authors a ON p.author_id = a.author_id
+      FROM authors a
+      JOIN author_papers ap ON a.author_id = ap.author_id
+      JOIN research_papers p ON ap.paper_id = p.paper_id
       WHERE a.gender = 'Female';
     `;
     const femaleAuthorsPapersCount = await executeQuery(
@@ -89,9 +91,9 @@ async function main() {
 
     // 6. Sum of the research papers of the authors per university
     const sumPapersPerUniversityQuery = `
-      SELECT a.university, COUNT(p.paper_id) AS TotalPapers
+      SELECT a.university, COUNT(ap.paper_id) AS TotalPapers
       FROM authors a
-      LEFT JOIN research_papers p ON a.author_id = p.author_id
+      LEFT JOIN author_papers ap ON a.author_id = ap.author_id
       GROUP BY a.university;
     `;
     const sumPapersPerUniversity = await executeQuery(
