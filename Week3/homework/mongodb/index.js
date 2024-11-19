@@ -4,9 +4,8 @@ import seedDatabase from './seedDatabase.js';
 
 async function createEpisodeExercise(client) {
   const newEpisode = {
-    episode: 13,
+    episode: 'S09E13',
     title: 'BLUE RIDGE FALLS',
-    season: 9,
     elements: ['MOUNTAIN', 'TREES', 'RIVER'],
   };
   const result = await client
@@ -23,7 +22,7 @@ async function findEpisodesExercises(client) {
   const episode2 = await client
     .db('databaseWeek3')
     .collection('bob_ross_episodes')
-    .findOne({ season: 2, episode: 2 });
+    .findOne({ episode: 'S02E02' });
 
   console.log(`The title of episode 2 in season 2 is ${episode2.title}`);
 
