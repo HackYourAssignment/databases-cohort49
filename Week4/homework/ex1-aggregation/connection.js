@@ -5,7 +5,7 @@ dotenv.config();
 const uri = process.env.MONGODB_URI;
 const client = new MongoClient(uri);
 
-export async function connectToDatabase() {
+async function connectToDatabase() {
   try {
     await client.connect();
     console.log('Connected to MongoDB');
@@ -15,7 +15,7 @@ export async function connectToDatabase() {
     process.exit(1);
   }
 }
-export async function disconnectFromDatabase() {
+async function disconnectFromDatabase() {
   await client.close();
   console.log('Disconnected from MongoDB');
 }
